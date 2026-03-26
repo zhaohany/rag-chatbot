@@ -29,7 +29,6 @@
 │   ├── architecture/
 │   ├── setup/
 │   ├── api/
-│   └── collaboration/
 ├── ui/                          # React + Vite + TypeScript demo UI
 ├── requirements.txt
 └── README.md
