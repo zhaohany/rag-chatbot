@@ -66,6 +66,17 @@ curl -Method Post http://127.0.0.1:8000/ingest
 curl -Method Post http://127.0.0.1:8000/query -ContentType "application/json" -Body '{"question":"Summarize the docs"}'
 ```
 
+可选：启动 lightweight UI（React + Vite + TypeScript）
+
+```powershell
+cd ui
+Copy-Item .env.example .env  # 可选
+npm install
+npm run dev
+```
+
+访问 UI：`http://127.0.0.1:5173`
+
 ## Troubleshooting
 
 - 激活脚本受限：`Set-ExecutionPolicy -Scope Process Bypass`

@@ -13,6 +13,7 @@
 - Vector store (FAISS)
 - Raw docs (`raw_docs/*.md`)
 - Metadata (`data/meta/metadata.json`)
+- Lightweight UI (`ui/`, React + Vite + TypeScript)
 
 ## Current Code Layout
 
@@ -48,6 +49,7 @@
 - 文档由团队提前放入 `raw_docs/`
 - `/ingest` 只做 trigger，不承载大 payload
 - 配置默认值在 `app/core/config.py`，可用 `.env` 覆盖
+- lightweight UI 作为本地演示层，直接调用现有 API（`/health`、`/ingest`、`/query`）
 
 ## Design Decisions
 

@@ -45,3 +45,9 @@
 - 不先固定死一个数字模板。
 - 对 Markdown 文档优先 `header-aware + 小 overlap`。
 - 当文档结构不稳定时，再回退到 fixed-length（例如 `chunk_size=120`, `overlap=20`，按词）。
+
+### C. UI Decision（轻量前端决策）
+
+- 采用 `React + Vite + TypeScript`：兼顾 Node/JS 技术栈、简历可见度和工程轻量性。
+- UI 用于本地演示和联调，优先复用现有 API，而不是在前端重复业务逻辑。
+- UI 范围控制为三项能力：服务状态查看（`/health`）、触发入库（`/ingest`）、提问与结果展示（`/query`）。

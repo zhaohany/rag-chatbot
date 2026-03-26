@@ -30,6 +30,7 @@
 │   ├── setup/
 │   ├── api/
 │   └── collaboration/
+├── ui/                          # React + Vite + TypeScript demo UI
 ├── requirements.txt
 └── README.md
 ```
@@ -40,6 +41,7 @@
 - 已实现本地入库流程：读取 markdown -> chunking -> embedding -> FAISS + metadata
 - 已实现本地检索与回答：Top-K 检索 + prompt 组装 + mock/HF 生成适配
 - 已实现本地持久化：`data/index/faiss.index` 与 `data/meta/metadata.json`
+- 已实现轻量 UI：React + Vite + TypeScript（调用 `/health`、`/ingest`、`/query`）
 - 当前以本地开发为唯一目标，暂不引入云端目录或部署逻辑
 
 ## 数据流
@@ -57,6 +59,11 @@
 
 - Top-K：太小会降低召回，太大会提高噪声、延迟和 token 成本；建议从 `Top-K=3` 起，做 `1/3/5` 对比实验。
 - chunk size：太小会打碎语义，太大会让检索粒度变粗；Markdown 优先 `header-aware + 小 overlap`，结构不稳定时回退 fixed-length（如 `chunk_size=120`, `overlap=20`）。
+
+UI 技术选型（简历友好 + 轻量）：
+
+- 采用 `React + Vite + TypeScript`，保持 Node/JS 技术栈与前端通用性。
+- UI 只负责 API 消费与展示，不在前端重复后端检索/生成逻辑。
 
 ## 接口
 
@@ -85,6 +92,17 @@ uvicorn app.main:app --reload
 可选环境变量模板：`.env.example`（按需复制为 `.env`）
 
 Swagger: `http://127.0.0.1:8000/docs`
+
+启动 UI（可选）：
+
+```bash
+cd ui
+cp .env.example .env  # 可选
+npm install
+npm run dev
+```
+
+UI 默认地址：`http://127.0.0.1:5173`
 
 ## 团队协作建议
 

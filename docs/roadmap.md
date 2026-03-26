@@ -8,6 +8,7 @@
 - Query retrieval + mock generation
 - Setup docs for macOS and Windows
 - Flat local structure (`app/`, `docs/`, `data/`, `raw_docs/`)
+- Lightweight UI scaffold (`ui/`, React + Vite + TypeScript)
 
 ## Milestone 2: Quality
 

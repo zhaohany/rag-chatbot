@@ -57,6 +57,17 @@ curl -X POST http://127.0.0.1:8000/ingest
 curl -X POST http://127.0.0.1:8000/query -H "Content-Type: application/json" -d '{"question":"Summarize the docs"}'
 ```
 
+可选：启动 lightweight UI（React + Vite + TypeScript）
+
+```bash
+cd ui
+cp .env.example .env  # 可选
+npm install
+npm run dev
+```
+
+访问 UI：`http://127.0.0.1:5173`
+
 ## Troubleshooting
 
 - `ModuleNotFoundError`: 确认已激活 `.venv` 且依赖安装成功
