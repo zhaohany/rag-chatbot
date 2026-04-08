@@ -7,44 +7,25 @@
 推荐组件：
 
 - FastAPI（API 服务）
-- sentence-transformers（embedding）
-- FAISS（本地向量检索）
-- 本地文件（raw docs）
-- metadata.json（映射与追溯）
+- 三个接口骨架（health / ingest / query）
+- 分层目录（api / services / models / shared / core）
+- 系统状态元数据文件（data/system/system_meta.json）
 
 数据流（简版）：
 
-1. `POST /ingest`：异步触发读取 `raw_docs/*.md` -> chunking -> embedding -> 写入 FAISS + metadata
-2. `POST /query`：query embedding -> Top-K retrieval -> prompt assembly -> generation
+1. `POST /ingest`：先保留入口骨架，后续逐步实现完整入库流程
+2. `POST /query`：先保留入口骨架，后续逐步实现检索与生成流程
 
 说明：
 
-- Local 课堂版本不要求前端上传文件，文档由你提前放在本地 `raw_docs` 目录。
-- `POST /ingest` 只负责 trigger，不负责承载大文本 payload。
-- `doc_id`、`chunk_id`、`vector_id` 由系统在入库时自动分配。
-- `chunk_size`、`chunk_overlap` 先写在代码默认配置中，保持课堂一致性。
+- Local 课堂版本当前以 skeleton 为主，先讲清分层与接口边界。
+- 系统元数据当前只保留两个字段：`ingestion_status`、`last_success_ingestion_time`。
+- 具体算法与存储实现在后续里程碑逐步加入。
 
 ### B. Design Decisions（工程权衡）
 
-#### 1) Top-K 的工程权衡
-
-- Top-K 太小：recall（召回率）下降，容易漏信息。
-- Top-K 太大：噪声上升，latency（延迟）和 token 成本上升。
-
-建议：
-
-- 从 `Top-K=3` 起步，做 `1/3/5` 对比实验，再定默认值。
-
-#### 2) chunk size 的工程权衡
-
-- chunk 太小：语义被切碎，上下文不完整。
-- chunk 太大：检索粒度过粗，噪声增加。
-
-建议：
-
-- 不先固定死一个数字模板。
-- 对 Markdown 文档优先 `header-aware + 小 overlap`。
-- 当文档结构不稳定时，再回退到 fixed-length（例如 `chunk_size=120`, `overlap=20`，按词）。
+- 本阶段优先“结构先行”：接口和目录先稳定，再补内部实现。
+- 复杂参数（Top-K、chunk size 等）放到后续课堂单独展开。
 
 ### C. UI Decision（轻量前端决策）
 

@@ -4,7 +4,6 @@
 
 - Python 3.10+
 - pip
-- 网络可访问 Hugging Face（首次会下载 embedding 模型）
 
 ## 2) Create and Activate Virtual Env
 
@@ -31,7 +30,9 @@ cp .env.example .env
 
 ## 4) Prepare Local Docs
 
-将你的 markdown 文档放到 `raw_docs/`，例如：
+当前 skeleton 阶段这一步可选。后续实现 ingest 时再放入 markdown 文档。
+
+示例目录：
 
 ```text
 raw_docs/
@@ -53,8 +54,9 @@ uvicorn app.main:app --reload
 ## 6) Quick Verify
 
 ```bash
+curl -X GET http://127.0.0.1:8000/health
 curl -X POST http://127.0.0.1:8000/ingest
-curl -X POST http://127.0.0.1:8000/query -H "Content-Type: application/json" -d '{"question":"Summarize the docs"}'
+curl -X POST http://127.0.0.1:8000/query -H "Content-Type: application/json" -d '{}'
 ```
 
 可选：启动 lightweight UI（React + Vite + TypeScript）
@@ -71,5 +73,4 @@ npm run dev
 ## Troubleshooting
 
 - `ModuleNotFoundError`: 确认已激活 `.venv` 且依赖安装成功
-- 模型下载慢：先确认网络，再重试
-- 查询报索引不存在：先执行一次 `/ingest`
+- 请求体校验报错：当前 `POST /query` 需要 JSON body，可先传 `{}`

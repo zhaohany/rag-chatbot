@@ -10,19 +10,8 @@ class Settings(BaseSettings):
 
     app_name: str = "rag-local-api"
     app_version: str = "0.1.0"
-
-    embedding_model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
-    chunk_size: int = 500
-    chunk_overlap: int = 100
     top_k: int = 3
-
-    raw_docs_dir: Path = Path("raw_docs")
-    faiss_index_path: Path = Path("data/index/faiss.index")
-    metadata_path: Path = Path("data/meta/metadata.json")
-
-    llm_provider: str = "mock"
-    huggingface_model: str = "HuggingFaceH4/zephyr-7b-beta"
-    huggingface_token: str | None = None
+    system_meta_path: Path = Path("data/system/system_meta.json")
 
 
 settings = Settings()

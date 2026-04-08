@@ -5,10 +5,9 @@
 核心组件：
 
 - FastAPI（API 服务）
-- sentence-transformers（embedding）
-- FAISS（本地向量检索）
-- `raw_docs/*.md`（本地原始文档）
-- `data/meta/metadata.json`（映射与追溯）
+- 三个教学接口骨架：`/health`、`/ingest`、`/query`
+- 分层目录：`api / services / models / shared / core`
+- 系统状态元数据：`data/system/system_meta.json`
 
 ## 目录结构
 
@@ -23,8 +22,9 @@
 │   └── services/
 ├── raw_docs/                    # 课堂文档输入（你手动放 .md）
 ├── data/
-│   ├── index/                   # faiss.index 输出
-│   └── meta/                    # metadata.json 输出
+│   ├── index/                   # 后续阶段预留
+│   ├── meta/                    # 后续阶段预留
+│   └── system/                  # 系统状态元数据（当前使用）
 ├── docs/
 │   ├── architecture/
 │   ├── setup/
@@ -36,39 +36,16 @@
 
 ## 当前状态
 
-- 已实现本地 FastAPI 三个接口：`/health`、`/ingest`、`/query`
-- 已实现本地入库流程：读取 markdown -> chunking -> embedding -> FAISS + metadata
-- 已实现本地检索与回答：Top-K 检索 + prompt 组装 + mock/HF 生成适配
-- 已实现本地持久化：`data/index/faiss.index` 与 `data/meta/metadata.json`
-- 已实现轻量 UI：React + Vite + TypeScript（调用 `/health`、`/ingest`、`/query`）
-- 当前以本地开发为唯一目标，暂不引入云端目录或部署逻辑
-
-## 数据流
-
-1. `POST /ingest`：异步触发读取 `raw_docs/*.md` -> chunking -> embedding -> 写入 FAISS + metadata
-2. `POST /query`：query embedding -> top-k retrieval -> prompt assembly -> generation
-
-说明：
-
-- `POST /ingest` 只负责 trigger，不承载大文本 payload
-- `doc_id`、`chunk_id`、`vector_id` 在入库时自动分配
-- `chunk_size`、`chunk_overlap` 使用代码默认配置（便于课堂一致）
-
-工程权衡（Design Decisions）：
-
-- Top-K：太小会降低召回，太大会提高噪声、延迟和 token 成本；建议从 `Top-K=3` 起，做 `1/3/5` 对比实验。
-- chunk size：太小会打碎语义，太大会让检索粒度变粗；Markdown 优先 `header-aware + 小 overlap`，结构不稳定时回退 fixed-length（如 `chunk_size=120`, `overlap=20`）。
-
-UI 技术选型（简历友好 + 轻量）：
-
-- 采用 `React + Vite + TypeScript`，保持 Node/JS 技术栈与前端通用性。
-- UI 只负责 API 消费与展示，不在前端重复后端检索/生成逻辑。
+- 当前是教学用 skeleton：保留 `FastAPI + 3 个接口` 的最小骨架。
+- `GET /health` 可用；`POST /ingest`、`POST /query` 目前返回 TODO 占位响应。
+- 目录结构已预留（`services/`、`shared/`、`data/`、`raw_docs/`），但暂不包含实际 RAG 实现。
+- 目标是和学生按阶段逐步实现，而不是一次性给出完整方案。
 
 ## 接口
 
-- `GET /health`：服务状态与索引存在性
-- `POST /ingest`：触发异步入库
-- `POST /query`：检索并生成回答
+- `GET /health`：健康检查（当前 skeleton 返回空结构）
+- `POST /ingest`：入库流程入口（当前 skeleton）
+- `POST /query`：查询流程入口（当前 skeleton）
 
 接口示例见 `docs/api/local-endpoints.md`。
 

@@ -9,6 +9,10 @@ from app.api.routes.query import router as query_router
 from app.core.config import settings
 
 app = FastAPI(title=settings.app_name, version=settings.app_version)
+# Configure CORS so the browser-based UI (Vite dev server) can call this API.
+# - allow_origins: only allow requests from these frontend origins.
+# - allow_credentials: allow cookies/auth headers when needed.
+# - allow_methods/allow_headers: accept all HTTP methods and headers for development.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
