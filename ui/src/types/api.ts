@@ -1,9 +1,7 @@
 export type HealthResponse = {
   status: string;
-  app: string;
   version: string;
-  index_exists: boolean;
-  metadata_exists: boolean;
+  ingestion_status: string;
   last_success_ingestion_time: string | null;
 };
 
@@ -22,7 +20,8 @@ export type RetrievedChunk = {
 };
 
 export type QueryResponse = {
-  answer: string;
-  used_top_k: number;
-  retrieved_chunks: RetrievedChunk[];
+  answer?: string;
+  used_top_k?: number;
+  retrieved_chunks?: RetrievedChunk[];
+  [key: string]: unknown;
 };
