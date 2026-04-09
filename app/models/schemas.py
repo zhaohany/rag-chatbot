@@ -20,4 +20,7 @@ class QueryResponse(BaseModel):
 
 
 class HealthResponse(BaseModel):
-    pass
+    status: str
+    version: str
+    ingestion_status: str
+    last_success_ingestion_time: str | None

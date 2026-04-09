@@ -12,13 +12,16 @@ class HealthService:
 
     def get_ingestion_meta(self) -> dict[str, str | None]:
         if self.meta_path.exists():
-            with self.meta_path.open("r", encoding="utf-8") as f:
-                data = json.load(f)
-            if isinstance(data, dict):
-                return {
-                    "ingestion_status": str(data.get("ingestion_status", "idle")),
-                    "last_success_ingestion_time": data.get("last_success_ingestion_time"),
-                }
+            try:
+                with self.meta_path.open("r", encoding="utf-8") as f:
+                    data = json.load(f)
+                if isinstance(data, dict):
+                    return {
+                        "ingestion_status": str(data.get("ingestion_status", "idle")),
+                        "last_success_ingestion_time": data.get("last_success_ingestion_time"),
+                    }
+            except (OSError, json.JSONDecodeError):
+                pass
 
         return {
             "ingestion_status": "idle",

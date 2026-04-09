@@ -2,14 +2,19 @@
 
 Base URL: `http://127.0.0.1:8000`
 
-说明：当前是教学 skeleton 阶段，schema 尚未定稿，接口先返回最小占位结构。
+说明：当前是教学 skeleton 阶段，先实现 health 的清晰状态响应，其他接口仍为占位结构。
 
 ## GET /health
 
 Response example:
 
 ```json
-{}
+{
+  "status": "ok",
+  "version": "0.1.0",
+  "ingestion_status": "idle",
+  "last_success_ingestion_time": null
+}
 ```
 
 ## POST /ingest
