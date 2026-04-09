@@ -14,11 +14,11 @@ Practical instructions for coding agents in this repository.
 From repo root:
 
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-uvicorn app.main:app --reload
+pip3 install --upgrade pip
+pip3 install -r requirements.txt
+python3 -m uvicorn app.main:app --reload
 ```
 
 Optional env file:
@@ -32,7 +32,7 @@ Quick API smoke checks:
 ```bash
 curl -X GET http://127.0.0.1:8000/health
 curl -X POST http://127.0.0.1:8000/ingest
-curl -X POST http://127.0.0.1:8000/query -H "Content-Type: application/json" -d '{"question":"Summarize the docs"}'
+curl -X POST http://127.0.0.1:8000/query -H "Content-Type: application/json" -d '{}'
 ```
 
 ## Build / lint / test commands
@@ -43,15 +43,15 @@ Use the following baseline commands.
 No packaging build pipeline exists. Use runtime checks:
 
 ```bash
-python -m compileall app
-uvicorn app.main:app --reload
+python3 -m compileall app
+python3 -m uvicorn app.main:app --reload
 ```
 
 ### Lint, format, typing
 Install dev tools if missing:
 
 ```bash
-pip install ruff mypy pytest
+pip3 install ruff mypy pytest
 ```
 
 Run quality checks:
@@ -93,7 +93,7 @@ pytest -q -x
 
 ## Repository structure
 - `app/api/routes/`: thin HTTP endpoints and `HTTPException` mapping.
-- `app/services/`: business logic (ingest, retrieval, generation, vector/metadata stores).
+- `app/services/`: service skeletons aligned with routes (health / ingest / query).
 - `app/models/`: Pydantic request/response models.
 - `app/shared/`: reusable helpers (`chunking`, IDs).
 - `app/core/config.py`: default settings and env-driven config.

@@ -59,10 +59,10 @@
 通用最短启动：
 
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
+pip3 install -r requirements.txt
+python3 -m uvicorn app.main:app --reload
 ```
 
 可选环境变量模板：`.env.example`（按需复制为 `.env`）

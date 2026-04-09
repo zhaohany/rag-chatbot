@@ -3,7 +3,7 @@
 ## 1) Prerequisites
 
 - Python 3.10+
-- pip
+- pip3
 
 ## 2) Create and Activate Virtual Env
 
@@ -16,8 +16,8 @@ python --version
 ## 3) Install Dependencies
 
 ```bash
-pip install --upgrade pip
-pip install -r requirements.txt
+pip3 install --upgrade pip
+pip3 install -r requirements.txt
 ```
 
 可选：复制环境变量模板
@@ -43,7 +43,7 @@ raw_docs/
 ## 5) Run API
 
 ```bash
-uvicorn app.main:app --reload
+python3 -m uvicorn app.main:app --reload
 ```
 
 访问：
