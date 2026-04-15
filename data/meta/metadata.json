@@ -1,0 +1,93 @@
+[
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_1",
+    "source": "common_troubleshooting_playbook.md",
+    "chunk_index": 1,
+    "chunk_text": "# Common IT Troubleshooting Playbook\n\n## VPN Not Connecting\nSymptoms: connection timeout, authentication failed, or no route to internal services.\nChecklist:\n1. Confirm user credentials and MFA status.\n2. Verify client version and certificate validity.\n3. Test network from alternate Wi-Fi or hotspot.\n4. Flush DNS cache and restart VPN client.\n5. Escalate to Network team if gateway health is degraded.\n\n## Outlook or Email Sync Issues\nSymptoms: cannot send/receive, mailbox not updating, repeated l"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_2",
+    "source": "common_troubleshooting_playbook.md",
+    "chunk_index": 2,
+    "chunk_text": "mail Sync Issues\nSymptoms: cannot send/receive, mailbox not updating, repeated login prompt.\nChecklist:\n1. Verify mailbox quota and service health advisory.\n2. Re-authenticate account and clear cached credentials.\n3. Rebuild local profile if sync still fails.\n4. Collect error code and timestamp before escalation.\n\n## Printer Not Working\nSymptoms: printer offline, queue stuck, missing printer mapping.\nChecklist:\n1. Confirm device and printer are on same network segment.\n2. Clear print queue and r"
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_3",
+    "source": "common_troubleshooting_playbook.md",
+    "chunk_index": 3,
+    "chunk_text": "nfirm device and printer are on same network segment.\n2. Clear print queue and restart print spooler service.\n3. Re-add printer from approved print server.\n4. Reinstall signed printer driver package.\n\n## Slow Laptop Performance\nSymptoms: startup delay, high CPU, frequent freezing.\nChecklist:\n1. Check available disk space and memory usage.\n2. Remove unauthorized startup apps.\n3. Run endpoint health scan and patch update.\n4. If unresolved, schedule backup and reimage."
+  },
+  {
+    "doc_id": "doc_1",
+    "chunk_id": "doc_1_chunk_4",
+    "source": "common_troubleshooting_playbook.md",
+    "chunk_index": 4,
+    "chunk_text": "te.\n4. If unresolved, schedule backup and reimage."
+  },
+  {
+    "doc_id": "doc_2",
+    "chunk_id": "doc_2_chunk_1",
+    "source": "employee_handbook.md",
+    "chunk_index": 1,
+    "chunk_text": "# Internal IT Support Service Catalog\n\n## What IT Support Handles\nIT Support handles password reset, MFA issues, VPN connectivity, printer problems, email client issues, and software installation requests.\nIT Support also supports device setup for new employees and basic network troubleshooting on corporate endpoints.\n\n## Standard Service Hours\nService Desk is available Monday to Friday, 08:00-18:00 local time.\nUrgent access issues for executives or customer-facing teams can be prioritized outsi"
+  },
+  {
+    "doc_id": "doc_2",
+    "chunk_id": "doc_2_chunk_2",
+    "source": "employee_handbook.md",
+    "chunk_index": 2,
+    "chunk_text": "t access issues for executives or customer-facing teams can be prioritized outside normal queue order.\n\n## Ticket Categories\n1. Account and Access: password reset, account unlock, MFA enrollment.\n2. Endpoint and Apps: laptop setup, Office apps, browser issues.\n3. Connectivity: VPN, Wi-Fi, DNS, proxy setup.\n4. Peripheral Devices: printer mapping, scanner setup, headset problems.\n\n## Expected First Response\nHigh priority: within 15 minutes.\nNormal priority: within 2 business hours.\nLow priority re"
+  },
+  {
+    "doc_id": "doc_2",
+    "chunk_id": "doc_2_chunk_3",
+    "source": "employee_handbook.md",
+    "chunk_index": 3,
+    "chunk_text": "ty: within 15 minutes.\nNormal priority: within 2 business hours.\nLow priority requests: within 1 business day.\n\n## Ticket Closure Rule\nTicket can be closed after user confirms service is restored, or after clear evidence and two follow-up attempts."
+  },
+  {
+    "doc_id": "doc_3",
+    "chunk_id": "doc_3_chunk_1",
+    "source": "it_support_roles_and_handoffs.md",
+    "chunk_index": 1,
+    "chunk_text": "# Device Setup and Software Installation SOP\n\n## New Laptop Setup (First Day)\n1. Verify user identity and asset tag.\n2. Join device to company domain.\n3. Install security tools: endpoint protection and disk encryption agent.\n4. Install standard apps: Office suite, browser, VPN client, collaboration tools.\n5. Confirm email, calendar, and shared drive access.\n\n## Standard Software Request\nUser submits software request ticket with business reason and manager approval.\nIT Support checks license avai"
+  },
+  {
+    "doc_id": "doc_3",
+    "chunk_id": "doc_3_chunk_2",
+    "source": "it_support_roles_and_handoffs.md",
+    "chunk_index": 2,
+    "chunk_text": "ticket with business reason and manager approval.\nIT Support checks license availability and compatibility with endpoint policy.\nApproved software should be installed within 1 business day.\n\n## Admin Rights Policy\nLocal admin rights are not granted by default.\nTemporary elevation must include ticket reference, duration, and approval owner.\n\n## Reimage Procedure\nBackup user files to approved cloud or shared storage.\nReimage the device with current baseline image.\nRestore approved files and valida"
+  },
+  {
+    "doc_id": "doc_3",
+    "chunk_id": "doc_3_chunk_3",
+    "source": "it_support_roles_and_handoffs.md",
+    "chunk_index": 3,
+    "chunk_text": "eimage the device with current baseline image.\nRestore approved files and validate business-critical apps.\n\n## Final Validation Checklist\nUser can sign in with SSO.\nVPN connects successfully.\nPrinter and shared folders are accessible.\nSecurity tools report healthy status."
+  },
+  {
+    "doc_id": "doc_4",
+    "chunk_id": "doc_4_chunk_1",
+    "source": "password_reset_and_account_unlock.md",
+    "chunk_index": 1,
+    "chunk_text": "# Password Reset and Account Unlock SOP\n\n## When to Use This SOP\nUse this process when a user forgets password, is locked out after failed attempts, or cannot pass MFA due to device change.\n\n## Identity Verification\nBefore any account action, verify user identity using two factors:\n1. Employee ID or corporate email.\n2. Manager name or last successful login location.\n\n## Password Reset Steps\n1. Open IAM admin portal and locate user account.\n2. Confirm account is active and not under security hold"
+  },
+  {
+    "doc_id": "doc_4",
+    "chunk_id": "doc_4_chunk_2",
+    "source": "password_reset_and_account_unlock.md",
+    "chunk_index": 2,
+    "chunk_text": "nd locate user account.\n2. Confirm account is active and not under security hold.\n3. Trigger temporary password reset.\n4. Force password change at next login.\n5. Ask user to sign in and set a compliant password.\n\n## Account Unlock Steps\nIf account is locked, clear lockout status in IAM portal.\nCheck recent failed login source before unlock.\nIf login attempts come from unknown location, escalate to Security.\n\n## MFA Recovery\nIf user changed phone, remove old MFA device mapping.\nGuide user through"
+  },
+  {
+    "doc_id": "doc_4",
+    "chunk_id": "doc_4_chunk_3",
+    "source": "password_reset_and_account_unlock.md",
+    "chunk_index": 3,
+    "chunk_text": "ecovery\nIf user changed phone, remove old MFA device mapping.\nGuide user through re-enrollment with authenticator app.\nFor urgent access, issue one-time bypass code with approval.\n\n## SLA Targets\nPassword reset: within 15 minutes during service hours.\nAccount unlock: within 10 minutes after identity verification.\nMFA recovery: within 30 minutes."
+  }
+]

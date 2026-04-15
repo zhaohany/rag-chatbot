@@ -1,9 +1,15 @@
 from __future__ import annotations
 
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
+os.environ.setdefault("KMP_INIT_AT_FORK", "FALSE")
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
 import faiss
 import numpy as np
@@ -47,22 +53,25 @@ def read_markdown(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def embed_chunks(texts: list[str], model_name: str, batch_size: int) -> np.ndarray:
+def embed_chunks(
+    texts: list[str],
+    batch_size: int,
+    model: SentenceTransformer,
+) -> np.ndarray:
     """Generate embeddings for chunk texts.
 
     Input:
       texts: list of chunk text
-      model_name: sentence-transformers model name
       batch_size: embedding batch size
+      model: preloaded sentence-transformers model
 
     Output:
       2D float32 array-like, shape=(num_chunks, dim)
 
     Example:
-      embed_chunks(["hello", "world"], "sentence-transformers/all-MiniLM-L6-v2", 16)
+      embed_chunks(["hello", "world"], 16, model)
       -> ndarray with shape (2, 384)
     """
-    model = SentenceTransformer(model_name)
     vectors = model.encode(texts, batch_size=batch_size, convert_to_numpy=True)
     return np.asarray(vectors, dtype=np.float32)
 
@@ -84,6 +93,7 @@ def build_faiss_index(vectors: np.ndarray) -> faiss.IndexFlatL2:
     if vectors.shape[0] == 0:
         raise ValueError("vectors must not be empty")
 
+    faiss.omp_set_num_threads(1)
     vectors = np.ascontiguousarray(vectors, dtype=np.float32)
     dimension = int(vectors.shape[1])
     index = faiss.IndexFlatL2(dimension)  # type: ignore[call-arg]
@@ -135,6 +145,16 @@ class IngestService:
         self.raw_docs_dir = raw_docs_dir or settings.raw_docs_dir
         self.index_path = index_path or settings.index_path
         self.metadata_path = metadata_path or settings.metadata_path
+        self._embedding_model: SentenceTransformer | None = None
+
+    def preload_embedding_model(self) -> None:
+        if self._embedding_model is None:
+            self._embedding_model = SentenceTransformer(settings.embedding_model_name)
+
+    def get_embedding_model(self) -> SentenceTransformer:
+        if self._embedding_model is None:
+            raise RuntimeError("Embedding model is not preloaded")
+        return self._embedding_model
 
     def set_status(
         self,
@@ -225,10 +245,11 @@ class IngestService:
                     )
 
             if chunk_texts:
+                model = self.get_embedding_model()
                 vectors = embed_chunks(
                     chunk_texts,
-                    model_name=settings.embedding_model_name,
                     batch_size=settings.embedding_batch_size,
+                    model=model,
                 )
                 index = build_faiss_index(vectors)
                 write_faiss_index(index, self.index_path)

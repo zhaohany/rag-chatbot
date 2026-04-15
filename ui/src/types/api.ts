@@ -8,7 +8,9 @@ export type HealthResponse = {
 
 export type IngestResponse = {
   status: string;
-  message: string;
+  total_docs: number;
+  total_chunks: number;
+  message: string | null;
 };
 
 export type RetrievedChunk = {
