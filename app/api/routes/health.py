@@ -17,4 +17,5 @@ def health() -> HealthResponse:
         version=settings.app_version,
         ingestion_status=ingestion_meta["ingestion_status"] or "idle",
         last_success_ingestion_time=ingestion_meta["last_success_ingestion_time"],
+        total_docs=int(ingestion_meta["total_docs"] or 0),
     )

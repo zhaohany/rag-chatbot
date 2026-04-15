@@ -3,6 +3,7 @@ export type HealthResponse = {
   version: string;
   ingestion_status: string;
   last_success_ingestion_time: string | null;
+  total_docs: number;
 };
 
 export type IngestResponse = {

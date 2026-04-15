@@ -102,6 +102,10 @@ export default function App() {
           <strong>{formatTime(health?.last_success_ingestion_time ?? null)}</strong>
         </p>
         <p>
+          <span>Total docs</span>
+          <strong>{health?.total_docs ?? 0}</strong>
+        </p>
+        <p>
           <span>Version</span>
           <strong>{health?.version ?? "-"}</strong>
         </p>

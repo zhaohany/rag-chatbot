@@ -24,3 +24,4 @@ class HealthResponse(BaseModel):
     version: str
     ingestion_status: str
     last_success_ingestion_time: str | None
+    total_docs: int

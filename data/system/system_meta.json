@@ -1,4 +1,5 @@
 {
   "ingestion_status": "idle",
-  "last_success_ingestion_time": null
+  "last_success_ingestion_time": null,
+  "total_docs": 0
 }
