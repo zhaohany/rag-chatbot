@@ -25,8 +25,8 @@
 ## Data Flow
 
 1. `POST /ingest`
-   - 当前仅保留流程入口（skeleton）
-   - 后续阶段逐步补齐：文档读取 -> chunking -> embedding -> 向量/元数据写入
+   - 当前实现为同步 ingest：文档读取 -> chunking -> embedding -> 向量/元数据写入
+   - 每次调用默认执行本地全量重建，便于教学和调试
 
 2. `POST /query`
    - 当前仅保留流程入口（skeleton）
@@ -35,7 +35,7 @@
 ## Notes
 
 - Local 版本不做前端上传
-- 当前文档与代码以教学 skeleton 为准，先保证结构简单
+- 当前实现保持 local MVP，优先保证流程可观察和可调试
 - 系统状态先只维护两个字段：`ingestion_status`、`last_success_ingestion_time`
 - lightweight UI 作为本地演示层，直接调用现有 API（`/health`、`/ingest`、`/query`）
 

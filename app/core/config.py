@@ -11,6 +11,13 @@ class Settings(BaseSettings):
     app_name: str = "rag-local-api"
     app_version: str = "0.1.0"
     top_k: int = 3
+    raw_docs_dir: Path = Path("raw_docs")
+    index_path: Path = Path("data/index/faiss.index")
+    metadata_path: Path = Path("data/meta/metadata.json")
+    embedding_model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
+    embedding_batch_size: int = 16
+    chunk_size: int = 500
+    chunk_overlap: int = 80
     system_meta_path: Path = Path("data/system/system_meta.json")
 
 

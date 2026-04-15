@@ -4,7 +4,10 @@ from pydantic import BaseModel
 
 
 class IngestResponse(BaseModel):
-    pass
+    status: str
+    total_docs: int
+    total_chunks: int
+    message: str | None = None
 
 
 class QueryRequest(BaseModel):
