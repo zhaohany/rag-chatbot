@@ -6,7 +6,10 @@ export function getHealth(): Promise<HealthResponse> {
 }
 
 export function postIngest(): Promise<IngestResponse> {
-  return requestJson<IngestResponse>("/ingest", { method: "POST" });
+  return requestJson<IngestResponse>("/ingest", {
+    method: "POST",
+    timeoutMs: 600000,
+  });
 }
 
 export function postQuery(

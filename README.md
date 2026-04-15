@@ -36,15 +36,15 @@
 
 ## 当前状态
 
-- 当前是教学用 skeleton：保留 `FastAPI + 3 个接口` 的最小骨架。
-- `GET /health` 可用；`POST /ingest`、`POST /query` 目前返回 TODO 占位响应。
-- 目录结构已预留（`services/`、`shared/`、`data/`、`raw_docs/`），但暂不包含实际 RAG 实现。
-- 目标是和学生按阶段逐步实现，而不是一次性给出完整方案。
+- 当前是 local MVP：`/health` 与 `/ingest` 可用，`/query` 仍是占位响应。
+- `POST /ingest` 为同步流程：读取 `raw_docs/*.md`，执行 chunking/embedding，并写入本地 FAISS 与 metadata。
+- 目录结构保持分层（`api/`、`services/`、`models/`、`shared/`、`core/`），便于后续演进 async 版本。
+- 目标仍是课堂分阶段实现，优先保证链路清晰与可调试。
 
 ## 接口
 
-- `GET /health`：健康检查（当前 skeleton 返回空结构）
-- `POST /ingest`：入库流程入口（当前 skeleton）
+- `GET /health`：健康检查（返回服务状态与 ingest 元数据）
+- `POST /ingest`：同步入库流程入口（本地重建索引）
 - `POST /query`：查询流程入口（当前 skeleton）
 
 接口示例见 `docs/api/local-endpoints.md`。
