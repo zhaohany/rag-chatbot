@@ -16,7 +16,7 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 from app.core.config import settings
-from app.shared.chunking import split_markdown_into_chunks
+from app.shared.chunking import split_into_chunks
 from app.shared.ids import make_chunk_id, make_doc_id
 
 
@@ -225,7 +225,7 @@ class IngestService:
             for file_index, file_path in enumerate(markdown_files, start=1):
                 doc_id = make_doc_id(file_index)
                 text = read_markdown(file_path)
-                chunks = split_markdown_into_chunks(
+                chunks = split_into_chunks(
                     text,
                     chunk_size=settings.chunk_size,
                     chunk_overlap=settings.chunk_overlap,
