@@ -58,7 +58,7 @@ uvicorn app.main:app --reload
 ```powershell
 curl http://127.0.0.1:8000/health
 curl -Method Post http://127.0.0.1:8000/ingest
-curl -Method Post http://127.0.0.1:8000/query -ContentType "application/json" -Body '{}'
+curl -Method Post http://127.0.0.1:8000/query -ContentType "application/json" -Body '{"question":"How to reset password?"}'
 ```
 
 可选：启动 lightweight UI（React + Vite + TypeScript）
@@ -75,4 +75,4 @@ npm run dev
 ## Troubleshooting
 
 - 激活脚本受限：`Set-ExecutionPolicy -Scope Process Bypass`
-- 请求体校验报错：当前 `POST /query` 需要 JSON body，可先传 `{}`
+- 请求体校验报错：当前 `POST /query` 需要 JSON body，且必须包含 `question`

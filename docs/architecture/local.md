@@ -29,8 +29,8 @@
    - 每次调用默认执行本地全量重建，便于教学和调试
 
 2. `POST /query`
-   - 当前仅保留流程入口（skeleton）
-   - 后续阶段逐步补齐：检索 -> 上下文组装 -> 生成
+   - 当前实现 retrieval-only：问题向量化 -> FAISS top-k 检索 -> 返回 `retrieved_chunks`
+   - 暂不做答案生成，`answer` 字段保留为 `null`
 
 ## Notes
 

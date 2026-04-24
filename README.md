@@ -36,7 +36,7 @@
 
 ## 当前状态
 
-- 当前是 local MVP：`/health` 与 `/ingest` 可用，`/query` 仍是占位响应。
+- 当前是 local MVP：`/health` 与 `/ingest` 可用，`/query` 已支持 retrieval（仅返回 top-k 检索结果，不做生成）。
 - `POST /ingest` 为同步流程：读取 `raw_docs/*.md`，执行 chunking/embedding，并写入本地 FAISS 与 metadata。
 - 目录结构保持分层（`api/`、`services/`、`models/`、`shared/`、`core/`），便于后续演进 async 版本。
 - 目标仍是课堂分阶段实现，优先保证链路清晰与可调试。
@@ -45,7 +45,7 @@
 
 - `GET /health`：健康检查（返回服务状态与 ingest 元数据）
 - `POST /ingest`：同步入库流程入口（本地重建索引）
-- `POST /query`：查询流程入口（当前 skeleton）
+- `POST /query`：查询流程入口（retrieval-only，返回 `retrieved_chunks`）
 
 接口示例见 `docs/api/local-endpoints.md`。
 

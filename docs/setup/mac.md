@@ -56,7 +56,7 @@ python3 -m uvicorn app.main:app --reload
 ```bash
 curl -X GET http://127.0.0.1:8000/health
 curl -X POST http://127.0.0.1:8000/ingest
-curl -X POST http://127.0.0.1:8000/query -H "Content-Type: application/json" -d '{}'
+curl -X POST http://127.0.0.1:8000/query -H "Content-Type: application/json" -d '{"question":"How to reset password?"}'
 ```
 
 可选：启动 lightweight UI（React + Vite + TypeScript）
@@ -73,4 +73,4 @@ npm run dev
 ## Troubleshooting
 
 - `ModuleNotFoundError`: 确认已激活 `.venv` 且依赖安装成功
-- 请求体校验报错：当前 `POST /query` 需要 JSON body，可先传 `{}`
+- 请求体校验报错：当前 `POST /query` 需要 JSON body，且必须包含 `question`
