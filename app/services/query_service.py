@@ -43,6 +43,21 @@ def retrieve_topk(
     query_vector: np.ndarray,
     top_k: int,
 ) -> tuple[np.ndarray, np.ndarray]:
+    """Search FAISS and return top-k distances and vector ids.
+
+    Output format:
+      - distances: shape (1, k), float scores from L2 distance
+      - indices: shape (1, k), int vector ids in FAISS
+
+    Example:
+      distances = [[0.22, 0.41, 0.97]]
+      indices = [[5, 2, 9]]
+
+      Meaning:
+        rank 1 -> vector_id 5, score 0.22
+        rank 2 -> vector_id 2, score 0.41
+        rank 3 -> vector_id 9, score 0.97
+    """
     if top_k <= 0:
         raise ValueError("top_k must be greater than 0")
 
@@ -61,20 +76,34 @@ def build_retrieved_chunks(
     indices: np.ndarray,
     metadata: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
+    """Build retrieval rows from FAISS output.
+
+    We align by position:
+      indices[0][i] is the vector id from FAISS,
+      metadata[vector_id] is the metadata for that vector.
+
+    Students can fill real `text` and `source_path` later.
+    """
     chunks: list[dict[str, Any]] = []
 
-    for score, vector_id in zip(distances[0], indices[0]):
-        if int(vector_id) < 0:
-            continue
+    if distances.size == 0 or indices.size == 0:
+        return chunks
 
-        record = metadata[int(vector_id)] if int(vector_id) < len(metadata) else {}
+    scores_row = distances[0]
+    vector_ids_row = indices[0]
+
+    for rank, raw_vector_id in enumerate(vector_ids_row):
+        vector_id = int(raw_vector_id)
+        score = float(scores_row[rank])
+        record: dict[str, Any] = metadata[vector_id]
+
         chunks.append(
             {
-                "vector_id": int(vector_id),
-                "chunk_id": record.get("chunk_id") if isinstance(record, dict) else None,
-                "doc_id": record.get("doc_id") if isinstance(record, dict) else None,
-                "score": float(score),
-                # Reserved for students to fill real content later.
+                "vector_id": vector_id,
+                "chunk_id": record.get("chunk_id"),
+                "doc_id": record.get("doc_id"),
+                "score": score,
+                # TODO(): fill real content from metadata/storage.
                 "text": None,
                 "source_path": None,
             }
