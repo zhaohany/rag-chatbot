@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class IngestResponse(BaseModel):
@@ -11,15 +11,22 @@ class IngestResponse(BaseModel):
 
 
 class QueryRequest(BaseModel):
-    pass
+    question: str = Field(..., min_length=1)
 
 
 class RetrievedChunk(BaseModel):
-    pass
+    vector_id: int
+    chunk_id: str | None = None
+    doc_id: str | None = None
+    score: float
+    text: str | None = None
+    source_path: str | None = None
 
 
 class QueryResponse(BaseModel):
-    pass
+    answer: str | None = None
+    used_top_k: int
+    retrieved_chunks: list[RetrievedChunk]
 
 
 class HealthResponse(BaseModel):
