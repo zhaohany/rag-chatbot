@@ -1,15 +1,9 @@
 from __future__ import annotations
 
 import json
-import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-
-os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
-os.environ.setdefault("KMP_INIT_AT_FORK", "FALSE")
-os.environ.setdefault("OMP_NUM_THREADS", "1")
-os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
 import faiss
 import numpy as np
@@ -17,6 +11,7 @@ from sentence_transformers import SentenceTransformer
 
 from app.core.config import settings
 from app.shared.chunking import split_into_chunks
+from app.shared.embedding import get_embedding_model, preload_embedding_model
 from app.shared.ids import make_chunk_id, make_doc_id
 
 
@@ -145,16 +140,12 @@ class IngestService:
         self.raw_docs_dir = raw_docs_dir or settings.raw_docs_dir
         self.index_path = index_path or settings.index_path
         self.metadata_path = metadata_path or settings.metadata_path
-        self._embedding_model: SentenceTransformer | None = None
 
     def preload_embedding_model(self) -> None:
-        if self._embedding_model is None:
-            self._embedding_model = SentenceTransformer(settings.embedding_model_name)
+        preload_embedding_model()
 
     def get_embedding_model(self) -> SentenceTransformer:
-        if self._embedding_model is None:
-            raise RuntimeError("Embedding model is not preloaded")
-        return self._embedding_model
+        return get_embedding_model()
 
     def set_status(
         self,
