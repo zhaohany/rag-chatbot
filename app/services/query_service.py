@@ -8,7 +8,7 @@ import faiss
 import numpy as np
 
 from app.core.config import settings
-from app.services.ingest_service import ingest_service
+from app.shared.embedding import get_embedding_model, preload_embedding_model
 
 
 def load_index(index_path: Path) -> faiss.Index:
@@ -33,7 +33,7 @@ def load_metadata(metadata_path: Path) -> list[dict[str, Any]]:
 
 
 def embed_question(question: str) -> np.ndarray:
-    model = ingest_service.get_embedding_model()
+    model = get_embedding_model()
     vector = model.encode([question], convert_to_numpy=True)
     return np.ascontiguousarray(vector, dtype=np.float32)
 
@@ -113,6 +113,9 @@ def build_retrieved_chunks(
 
 
 class QueryService:
+    def preload_embedding_model(self) -> None:
+        preload_embedding_model()
+
     def query(self, question: str) -> dict[str, Any]:
         index = load_index(settings.index_path)
         query_vector = embed_question(question)
