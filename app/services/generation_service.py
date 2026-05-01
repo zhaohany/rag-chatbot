@@ -40,9 +40,9 @@ def _build_context_blocks(retrieved_chunks: list[dict[str, Any]]) -> str:
         doc_id = chunk.get("doc_id") or "unknown_doc"
         source_path = chunk.get("source_path") or "unknown_source"
         score = chunk.get("score")
-        try:
+        if isinstance(score, (int, float)):
             score_display = f"{float(score):.4f}"
-        except (TypeError, ValueError):
+        else:
             score_display = "N/A"
 
         lines.append(
@@ -54,11 +54,55 @@ def _build_context_blocks(retrieved_chunks: list[dict[str, Any]]) -> str:
 
 
 class GenerationService:
+    def build_prompt_v2_homework(
+        self,
+        question: str,
+        retrieved_chunks: list[dict[str, Any]],
+    ) -> str:
+        """Homework function: build v2 prompt with runtime placeholders.
+
+        Keep current app runnable by default: this function is NOT wired into
+        production flow yet. Students should implement this function first, then
+        switch one line in `build_prompt` (see hook below).
+
+        Input contract:
+        - `question`: user question string
+        - `retrieved_chunks`: retrieval rows from query service
+
+        Output contract:
+        - Return one final prompt string that is fully rendered from template.
+
+        Required placeholders for v2 template:
+        - `{context_blocks}`
+        - `{question}`
+        - `{top_k}`
+        - `{company_policy_version}`
+        - `{response_language}`
+
+        Implementation notes:
+        1) Read template with `_read_template(settings.prompt_template_path)`.
+        2) Build context with `_build_context_blocks(retrieved_chunks)`.
+        3) Render template with `template.format(...)` using all placeholders.
+        4) Keep existing error handling style: raise `PromptTemplateError` on
+           missing keys.
+
+        Homework hook (where to switch usage):
+        - In `build_prompt`, replace current `template.format(...)` return path
+          with:
+              return self.build_prompt_v2_homework(question, retrieved_chunks)
+        """
+        raise NotImplementedError("Homework: implement v2 prompt rendering")
+
     def build_prompt(
         self,
         question: str,
         retrieved_chunks: list[dict[str, Any]],
     ) -> str:
+        # Homework hook:
+        # After implementing `build_prompt_v2_homework`, switch to:
+        # return self.build_prompt_v2_homework(question, retrieved_chunks)
+        #
+        # We keep v1 path as default so current MVP remains runnable.
         template = _read_template(settings.prompt_template_path)
         context_blocks = _build_context_blocks(retrieved_chunks)
 

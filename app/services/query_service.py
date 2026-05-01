@@ -62,6 +62,8 @@ def retrieve_topk(
     if top_k <= 0:
         raise ValueError("top_k must be greater than 0")
 
+    faiss.omp_set_num_threads(1)
+
     total_vectors = int(index.ntotal)
     if total_vectors == 0:
         empty = np.empty((1, 0), dtype=np.float32)
