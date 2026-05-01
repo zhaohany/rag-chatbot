@@ -8,6 +8,7 @@ import faiss
 import numpy as np
 
 from app.core.config import settings
+from app.services.generation_service import generation_service
 from app.shared.embedding import get_embedding_model, preload_embedding_model
 
 
@@ -61,6 +62,8 @@ def retrieve_topk(
     if top_k <= 0:
         raise ValueError("top_k must be greater than 0")
 
+    faiss.omp_set_num_threads(1)
+
     total_vectors = int(index.ntotal)
     if total_vectors == 0:
         empty = np.empty((1, 0), dtype=np.float32)
@@ -94,6 +97,9 @@ def build_retrieved_chunks(
 
     for rank, raw_vector_id in enumerate(vector_ids_row):
         vector_id = int(raw_vector_id)
+        if vector_id < 0 or vector_id >= len(metadata):
+            continue
+
         score = float(scores_row[rank])
         record: dict[str, Any] = metadata[vector_id]
 
@@ -122,6 +128,8 @@ class QueryService:
         distances, indices = retrieve_topk(index, query_vector, settings.top_k)
         metadata = load_metadata(settings.metadata_path)
         retrieved_chunks = build_retrieved_chunks(distances, indices, metadata)
+        final_prompt = generation_service.build_prompt(question, retrieved_chunks)
+        generation_service.save_prompt(final_prompt)
 
         return {
             "answer": None,

@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     chunk_size: int = 500
     chunk_overlap: int = 80
     system_meta_path: Path = Path("data/system/system_meta.json")
+    prompt_template_path: Path = Path("data/prompts/query_prompt_v1.txt")
+    final_prompt_path: Path = Path("data/prompts/final_prompt.txt")
 
 
 settings = Settings()

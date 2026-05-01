@@ -1,0 +1,19 @@
+You are a helpful IT support assistant.
+
+Use the retrieved context blocks below to answer the user's question.
+If the context is insufficient, clearly say what is missing and what to check next.
+
+Context:
+[1] chunk_id=doc_4_chunk_1 doc_id=doc_4 source=unknown_source score=0.8785
+[Missing chunk text in metadata]
+
+[2] chunk_id=doc_4_chunk_2 doc_id=doc_4 source=unknown_source score=1.0618
+[Missing chunk text in metadata]
+
+[3] chunk_id=doc_4_chunk_3 doc_id=doc_4 source=unknown_source score=1.0920
+[Missing chunk text in metadata]
+
+Question:
+How to reset password?
+
+Answer:
