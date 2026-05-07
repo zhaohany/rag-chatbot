@@ -109,9 +109,8 @@ def build_retrieved_chunks(
                 "chunk_id": record.get("chunk_id"),
                 "doc_id": record.get("doc_id"),
                 "score": score,
-                # TODO(): fill real content from metadata/storage.
-                "text": None,
-                "source_path": None,
+                "text": record.get("chunk_text"),
+                "source_path": record.get("source"),
             }
         )
 
