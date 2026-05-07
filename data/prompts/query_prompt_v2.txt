@@ -14,12 +14,6 @@ If evidence is not enough, reply with: I do not know.
 1) Output in English unless runtime metadata specifies otherwise.
 2) Keep answer concise and actionable.
 
-[OUTPUT CONTRACT]
-Return ONLY valid JSON:
-{
-  "answer": "string",
-  "explanation": "string"
-}
 
 [FEW-SHOT EXAMPLE 1]
 Input Question: How does a new employee request VPN access?
