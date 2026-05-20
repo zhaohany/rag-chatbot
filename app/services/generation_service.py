@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
 from app.core.config import settings
+from app.services.providers.gemini_client import GeminiClientError, gemini_client
 
 
 class PromptTemplateError(RuntimeError):
@@ -11,6 +13,10 @@ class PromptTemplateError(RuntimeError):
 
 
 class PromptSaveError(RuntimeError):
+    pass
+
+
+class AnswerGenerationError(RuntimeError):
     pass
 
 
@@ -122,6 +128,30 @@ class GenerationService:
             raise PromptSaveError(
                 f"Failed to save final prompt: {final_prompt_path} ({exc})"
             ) from exc
+
+    def generate_answer(self, prompt: str) -> str:
+        try:
+            raw_output = gemini_client.generate_content(prompt)
+        except GeminiClientError as exc:
+            raise AnswerGenerationError(f"LLM generation failed: {exc}") from exc
+
+        try:
+            payload = json.loads(raw_output)
+        except json.JSONDecodeError as exc:
+            raise AnswerGenerationError(
+                "Model output is not valid JSON. Ensure prompt enforces strict JSON output."
+            ) from exc
+
+        if not isinstance(payload, dict):
+            raise AnswerGenerationError("Model output JSON must be an object.")
+
+        answer = payload.get("answer")
+        if not isinstance(answer, str) or not answer.strip():
+            raise AnswerGenerationError(
+                "Model output JSON must include non-empty 'answer' field."
+            )
+
+        return answer.strip()
 
 
 generation_service = GenerationService()
