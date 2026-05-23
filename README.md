@@ -36,8 +36,8 @@
 
 ## 当前状态
 
-- 当前是 local MVP：`/health` 与 `/ingest` 可用，`/query` 已支持 retrieval（仅返回 top-k 检索结果，不做生成）。
-- 每次调用 `POST /query` 会生成 prompt 产物并写入 `data/prompts/final_prompt.txt`，用于下节课接入 generation。
+- 当前是 local MVP：`/health` 与 `/ingest` 可用，`/query` 已支持 retrieval + Gemini generation。
+- 每次调用 `POST /query` 会生成 prompt 产物并写入 `data/prompts/final_prompt.txt`，并返回最终 `answer`。
 - `POST /ingest` 为同步流程：读取 `raw_docs/*.md`，执行 chunking/embedding，并写入本地 FAISS 与 metadata。
 - 目录结构保持分层（`api/`、`services/`、`models/`、`shared/`、`core/`），便于后续演进 async 版本。
 - 目标仍是课堂分阶段实现，优先保证链路清晰与可调试。
@@ -46,7 +46,7 @@
 
 - `GET /health`：健康检查（返回服务状态与 ingest 元数据）
 - `POST /ingest`：同步入库流程入口（本地重建索引）
-- `POST /query`：查询流程入口（retrieval-only，返回 `retrieved_chunks`；同时本地落盘 final prompt）
+- `POST /query`：查询流程入口（retrieval + generation，返回 `answer` 与 `retrieved_chunks`；同时本地落盘 final prompt）
 
 接口示例见 `docs/api/local-endpoints.md`。
 
@@ -66,7 +66,23 @@ pip3 install -r requirements.txt
 python3 -m uvicorn app.main:app --reload
 ```
 
-可选环境变量模板：`.env.example`（按需复制为 `.env`）
+环境变量快速准备：
+
+```bash
+cp .env.example .env
+```
+
+如需本地启用 Gemini，请在 `.env` 中替换：
+
+```bash
+RAG_GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+可选：列出当前账号可用的 Gemini models：
+
+```bash
+python3 scripts/list_gemini_models.py
+```
 
 Swagger: `http://127.0.0.1:8000/docs`
 

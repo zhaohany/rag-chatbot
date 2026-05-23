@@ -2,7 +2,7 @@
 
 Base URL: `http://127.0.0.1:8000`
 
-说明：当前是 local MVP 阶段，`/health` 与 `/ingest` 已提供可用响应结构，`/query` 为 retrieval-only（仅返回 `retrieved_chunks`，不做生成）。
+说明：当前是 local MVP 阶段，`/health` 与 `/ingest` 已提供可用响应结构，`/query` 执行 retrieval + Gemini generation。
 另外，`/query` 会在本地写入 prompt 产物：`data/prompts/final_prompt.txt`（不通过 API 返回）。
 
 ## GET /health
@@ -21,7 +21,7 @@ Response example:
 
 Prompt artifact behavior:
 
-- Template file: `data/prompts/query_prompt_v1.txt`
+- Template file: `data/prompts/query_prompt_v3.txt`
 - Final prompt output: `data/prompts/final_prompt.txt`
 - 如果模板缺失或落盘失败，接口会返回可读的错误信息，便于本地排查。
 
@@ -58,8 +58,8 @@ Response example:
 
 ```json
 {
-  "answer": null,
-  "used_top_k": 3,
+  "answer": "Complete MFA enrollment first, then submit a VPN access request in the Service Portal.",
+  "used_top_k": 1,
   "retrieved_chunks": [
     {
       "vector_id": 10,

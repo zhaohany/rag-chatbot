@@ -10,7 +10,7 @@ Scope for this homework:
 
 ## What Students Need to Build
 
-1. Use `query_prompt_v2.txt` as the new template.
+1. Use `query_prompt_v3.txt` as the new template.
 2. Fill runtime placeholders in prompt:
    - `{top_k}`
    - `{company_policy_version}`
@@ -30,7 +30,7 @@ Scope for this homework:
    - Current default should stay as v1 in `app/core/config.py`:
      - `prompt_template_path = Path("data/prompts/query_prompt_v1.txt")`
    - Student task: change that line to v2:
-     - `prompt_template_path = Path("data/prompts/query_prompt_v2.txt")`
+     - `prompt_template_path = Path("data/prompts/query_prompt_v3.txt")`
    - Do this change only when testing homework output.
 
 2. **Implement the homework function first (clear code location)**

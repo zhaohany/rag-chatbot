@@ -129,9 +129,10 @@ class QueryService:
         retrieved_chunks = build_retrieved_chunks(distances, indices, metadata)
         final_prompt = generation_service.build_prompt(question, retrieved_chunks)
         generation_service.save_prompt(final_prompt)
+        answer = generation_service.generate_answer(final_prompt)
 
         return {
-            "answer": None,
+            "answer": answer,
             "used_top_k": len(retrieved_chunks),
             "retrieved_chunks": retrieved_chunks,
         }

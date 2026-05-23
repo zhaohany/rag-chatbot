@@ -30,13 +30,17 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-可选：复制环境变量模板
+推荐：复制环境变量模板
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-默认配置已可直接运行，不复制 `.env` 也可以。
+如需启用 Gemini 生成，请在 `.env` 中替换你的 API Key：
+
+```powershell
+RAG_GEMINI_API_KEY=your_gemini_api_key_here
+```
 
 ## 4) Prepare Local Docs
 
