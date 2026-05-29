@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     app_name: str = "rag-local-api"
     app_version: str = "0.1.0"
     top_k: int = 1
+    company_policy_version: str = "v1"
     raw_docs_dir: Path = Path("raw_docs")
     index_path: Path = Path("data/index/faiss.index")
     metadata_path: Path = Path("data/meta/metadata.json")
@@ -23,7 +24,7 @@ class Settings(BaseSettings):
     chunk_size: int = 500
     chunk_overlap: int = 80
     system_meta_path: Path = Path("data/system/system_meta.json")
-    prompt_template_path: Path = Path("data/prompts/query_prompt_v3.txt")
+    prompt_template_path: Path = Path("data/prompts/query_prompt_v2.txt") # v3: token-saving test
     final_prompt_path: Path = Path("data/prompts/final_prompt.txt")
     gemini_api_key: str | None = None
     gemini_model: str = "models/gemini-2.0-flash-lite"

@@ -67,7 +67,15 @@ class GeminiClient:
             #        max_output_tokens=settings.llm_max_output_tokens,
             #        response_mime_type="application/json",
             #      )
-            raise NotImplementedError("Homework: implement Gemini API call in try block")
+            client = genai.Client(api_key=api_key)
+            response = client.models.generate_content(
+                model=settings.gemini_model,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    max_output_tokens=settings.llm_max_output_tokens,
+                    response_mime_type="application/json",
+                ),
+            )
         except errors.APIError as exc:
             raise GeminiClientError(f"Gemini API error: {exc}") from exc
         except Exception as exc:
