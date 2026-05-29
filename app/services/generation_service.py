@@ -97,27 +97,27 @@ class GenerationService:
           with:
               return self.build_prompt_v2_homework(question, retrieved_chunks)
         """
-        raise NotImplementedError("Homework: implement v2 prompt rendering")
+        template = _read_template(settings.prompt_template_path)
+        context_blocks = _build_context_blocks(retrieved_chunks)
+        try:
+            return template.format(
+                context_blocks=context_blocks,
+                question=question,
+                top_k=settings.top_k,
+                company_policy_version=settings.company_policy_version,
+                response_language="en-US",
+            )
+        except KeyError as exc:
+            raise PromptTemplateError(
+                "Prompt template is missing one or more required placeholders."
+            ) from exc
 
     def build_prompt(
         self,
         question: str,
         retrieved_chunks: list[dict[str, Any]],
     ) -> str:
-        # Homework hook:
-        # After implementing `build_prompt_v2_homework`, switch to:
-        # return self.build_prompt_v2_homework(question, retrieved_chunks)
-        #
-        # We keep v1 path as default so current MVP remains runnable.
-        template = _read_template(settings.prompt_template_path)
-        context_blocks = _build_context_blocks(retrieved_chunks)
-
-        try:
-            return template.format(context_blocks=context_blocks, question=question)
-        except KeyError as exc:
-            raise PromptTemplateError(
-                "Prompt template is invalid. It must contain {context_blocks} and {question}."
-            ) from exc
+        return self.build_prompt_v2_homework(question, retrieved_chunks)
 
     def save_prompt(self, prompt: str) -> None:
         final_prompt_path = settings.final_prompt_path
