@@ -29,8 +29,8 @@ def test_split_into_chunks_empty_text_returns_empty_list() -> None:
     # TODO(要测什么):
     # - 当输入只有空格和换行时，函数应返回空列表 []。
     # - 请补一个“精确相等”断言，直接比较 `chunks` 与 `[]`。
-    raise NotImplementedError("TODO: add assertion for empty input")
-
+    assert chunks == [], "expected empty list for whitespace-only input"
+    
 
 def test_split_into_chunks_raises_when_chunk_size_not_positive() -> None:
     text = "hello world"
@@ -39,8 +39,8 @@ def test_split_into_chunks_raises_when_chunk_size_not_positive() -> None:
     # - 当 chunk_size <= 0 时，函数必须抛出 ValueError。
     # - 错误信息应包含 "chunk_size"，表明是该参数不合法。
     # - 用 `with pytest.raises(ValueError, match="chunk_size"):` 包住函数调用。
-    raise NotImplementedError("TODO: add raises assertion for chunk_size")
-
+    with pytest.raises(ValueError, match="chunk_size must be greater than 0"):
+        split_into_chunks(text=text, chunk_size=0, chunk_overlap=0)
 
 def test_split_into_chunks_raises_when_overlap_invalid() -> None:
     text = "hello world"
@@ -49,7 +49,8 @@ def test_split_into_chunks_raises_when_overlap_invalid() -> None:
     # - 当 chunk_overlap >= chunk_size 时，函数必须抛出 ValueError。
     # - 错误信息应体现 overlap 与 chunk_size 的约束关系。
     # - 只验证这一类参数错误，不要混入其他断言。
-    raise NotImplementedError("TODO: add raises assertion for overlap")
+    with pytest.raises(ValueError, match="chunk_overlap must be smaller than chunk_size"):
+        split_into_chunks(text=text, chunk_size=5, chunk_overlap=5)
 
 
 def test_split_into_chunks_with_overlap_has_shared_boundary_text() -> None:
@@ -68,4 +69,9 @@ def test_split_into_chunks_with_overlap_has_shared_boundary_text() -> None:
     # - 尾部切片：`chunks[i][-overlap:]`
     # - 头部切片：`chunks[i + 1][:overlap]`
     # - 可考虑用 `any(...)` 聚合判断
-    raise NotImplementedError("TODO: add assertions for overlap behavior")
+    assert len(chunks) >= 2, "expected at least 2 chunks when overlap is used"
+
+    assert any(
+        chunks[i][-overlap:] == chunks[i + 1][:overlap]
+        for i in range(len(chunks) - 1)
+    ), "expected at least one pair of adjacent chunks to share boundary text via overlap"
