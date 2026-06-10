@@ -144,7 +144,7 @@ Dockerfile 要做的事情，本质上就是把上面的本地步骤放进容器
 
 - 选择一个带 Node.js 的基础镜像。
 - 把 `package.json` / `package-lock.json` 复制进去。
-- 在容器里运行 `npm ci` 安装依赖。
+- 在容器里运行 `npm install` 安装依赖。
 - 把前端源码复制进去。
 - 暴露 `5173` 端口。
 - 用 `npm run dev -- --host 0.0.0.0` 启动 Vite，让宿主机浏览器可以访问容器里的前端。
@@ -215,7 +215,7 @@ http://127.0.0.1:5173
 
 ### Step 1: 选择基础镜像
 
-前端项目需要 Node.js 来执行 `npm ci` 和 `npm run dev`。这一步已经在作业文件里写好。
+前端项目需要 Node.js 来执行 `npm install` 和 `npm run dev`。这一步已经在作业文件里写好。
 
 推荐使用：
 
@@ -249,13 +249,13 @@ COPY package*.json ./
 
 ### Step 4: 安装依赖
 
-本项目已经有 `package-lock.json`，所以推荐：
+和本地开发一样，在容器里安装依赖：
 
 ```dockerfile
-RUN npm ci
+RUN npm install
 ```
 
-`npm ci` 会严格按照 lockfile 安装，更适合自动化构建。
+这一步会根据 `package.json` / `package-lock.json` 下载依赖，生成 `node_modules/`。
 
 ### Step 5: 复制源码
 
@@ -298,7 +298,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci
+RUN npm install
 
 COPY . .
 

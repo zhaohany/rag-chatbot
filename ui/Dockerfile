@@ -15,11 +15,11 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Step 3: 先复制 package.json 和 package-lock.json。
-# 提示：这样 Docker 可以缓存 npm ci 这一层；源码变化时不用每次重新安装依赖。
+# 提示：这样 Docker 可以缓存 npm install 这一层；源码变化时不用每次重新安装依赖。
 COPY TODO_STUDENT_PACKAGE_FILES ./
 
 # Step 4: 安装前端依赖。
-# 提示：项目有 package-lock.json，所以推荐使用 npm ci，而不是 npm install。
+# 提示：和本地开发一样，使用 npm install 安装依赖。
 RUN TODO_STUDENT_INSTALL_COMMAND
 
 # Step 5: 复制剩余前端源码。
