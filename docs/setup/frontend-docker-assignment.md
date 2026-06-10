@@ -26,12 +26,12 @@
 
 前端技术栈：
 
-- `React`：负责写浏览器里的 UI 组件。可以类比成前端 UI 层的 framework，类似 FastAPI 帮你组织 API endpoint，React 帮你组织页面组件。
-- `React DOM`：把 React 组件渲染到浏览器页面上。可以类比成 FastAPI 和 ASGI server 之间把 Python 对象变成 HTTP response 的桥接层，只不过 React DOM 的目标是浏览器 DOM。
-- `Vite`：本地开发服务器和前端打包工具。开发时它会启动一个 web server，默认端口是 `5173`。可以类比成 `uvicorn --reload` 加 build tool：开发时启动服务，改代码后快速刷新；构建时生成可部署产物。
-- `TypeScript`：给 JavaScript 加类型检查，帮助提前发现参数、返回值、字段名错误。可以类比成 Python type hints 加 `mypy`，主要服务开发阶段，最终会转换成浏览器能运行的 JavaScript。
-- `Node.js`：运行 JavaScript 工具链的 runtime，不是一门语言。可以类比成 JavaScript 世界里的 `python3`。
-- `npm`：Node.js 生态的包管理器和命令运行器。可以类比成 `pip` 加一部分 `Makefile` / task runner 的功能。
+- `React`：负责写浏览器里的 UI 组件，比如页面、按钮、输入框、列表和状态变化。
+- `React DOM`：负责把 React 组件真正渲染到浏览器 DOM 里，让用户能在页面上看到和操作这些组件。
+- `Vite`：本地开发服务器和前端打包工具。开发时它会启动一个 web server，默认端口是 `5173`；构建时它会把前端代码打包成可部署的静态文件。
+- `TypeScript`：JavaScript 的类型增强版本，帮助提前发现参数、返回值、字段名等类型错误。
+- `Node.js`：运行 JavaScript 工具链的 runtime，不是一门语言。本项目需要它来运行 npm、Vite 和 TypeScript 编译工具。
+- `npm`：Node.js 生态的包管理器和命令运行器，用来安装依赖，也用来运行 `npm run dev`、`npm run build` 这类项目命令。
 
 关键文件：
 
