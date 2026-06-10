@@ -1,0 +1,84 @@
+# Docker Compose 配置文件，用来定义本地后端服务如何构建、启动和挂载目录。
+services:
+  # backend 是这个 Compose project 里的服务名。
+  # 启动时可以用：docker compose up --build backend
+  backend:
+    # build 表示这个服务需要从本仓库源码构建镜像。
+    build:
+      # context=. 表示把当前仓库根目录作为 Docker build context。
+      # Dockerfile 里的 COPY 指令只能复制这个 context 内、且未被 .dockerignore 排除的文件。
+      context: .
+
+    # 构建出来的本地镜像名，方便后续复用或手动查看。
+    image: rag-chatbot-backend:local
+
+    # 端口映射：宿主机端口:容器端口。
+    # 访问 http://127.0.0.1:8000 会转发到容器内 FastAPI 的 8000 端口。
+    ports:
+      - "8000:8000"
+
+    # 传入容器的环境变量。
+    # 这些变量会被 app/core/config.py 里的 Pydantic Settings 读取，因为项目使用 RAG_ 前缀。
+    environment:
+      # Gemini API Key。默认从宿主机 .env 或 shell 环境读取；未设置时为空字符串。
+      RAG_GEMINI_API_KEY: ${RAG_GEMINI_API_KEY:-}
+
+      # Gemini 模型名。未设置时使用项目默认的 flash-lite 模型。
+      RAG_GEMINI_MODEL: ${RAG_GEMINI_MODEL:-models/gemini-2.0-flash-lite}
+
+      # Prompt 模板路径。这里显式使用 query_prompt_v3.txt，与 .env.example 保持一致。
+      RAG_PROMPT_TEMPLATE_PATH: ${RAG_PROMPT_TEMPLATE_PATH:-data/prompts/query_prompt_v3.txt}
+
+      # 最终 prompt 输出路径。query 请求会把最终 prompt 写到这个文件，便于调试。
+      RAG_FINAL_PROMPT_PATH: ${RAG_FINAL_PROMPT_PATH:-data/prompts/final_prompt.txt}
+
+    # Volume 挂载，把宿主机目录或 Docker volume 映射进容器。
+    # 这样容器重建后，本地数据、文档和模型缓存不会丢失。
+    volumes:
+      # 挂载本地 data 目录。
+      # FAISS index、metadata、system_meta、final_prompt 等运行时文件都会保留在宿主机。
+      - ./data:/app/data
+
+      # 挂载本地 raw_docs 目录为只读。
+      # ingest 可以读取 markdown 文档，但容器内服务不能修改宿主机原始文档。
+      - ./raw_docs:/app/raw_docs:ro
+
+      # 使用命名 volume 缓存 Hugging Face / sentence-transformers 模型。
+      # 第一次启动会下载模型，后续重建容器仍可复用缓存。
+      - backend_hf_cache:/app/.cache/huggingface
+
+    # 容器异常退出时自动重启；手动 docker compose stop 不会被强制拉起。
+    restart: unless-stopped
+
+  # frontend 是 React + Vite UI 服务。
+  # 注意：ui/Dockerfile 是课堂作业模板，学生需要先填完 TODO_STUDENT_*，这个服务才能成功构建。
+  # 启动时可以用：docker compose up --build frontend
+  frontend:
+    # 从 ui/ 目录构建前端镜像。
+    build:
+      # context=./ui 表示 Docker build 只能看到 ui/ 目录里的文件。
+      # 这里会使用 ui/Dockerfile 和 ui/.dockerignore。
+      context: ./ui
+
+    # 构建出来的本地前端镜像名。
+    image: rag-chatbot-ui:student
+
+    # 端口映射：宿主机 5173 -> 容器内 Vite dev server 5173。
+    # 浏览器访问 http://127.0.0.1:5173 即可打开 UI。
+    ports:
+      - "5173:5173"
+
+    # Vite 前端环境变量。
+    # 这里使用 127.0.0.1:8000，是因为浏览器运行在宿主机上，会通过 backend 的端口映射访问 API。
+    environment:
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://127.0.0.1:8000}
+
+    # frontend 通常需要 backend 先启动。
+    # depends_on 只保证启动顺序，不保证 backend 已经完全 ready。
+    depends_on:
+      - backend
+
+# 声明 Compose 管理的命名 volume。
+volumes:
+  # 用于保存模型缓存，不会随着单个容器删除而立即消失。
+  backend_hf_cache:
