@@ -4,6 +4,73 @@
 
 为了保持作业简单，这里不做生产环境 nginx 部署，也不做 multi-stage build。学生只需要完成一个开发版 Dockerfile：安装依赖，然后运行 Vite dev server。
 
+## Frontend 快速背景
+
+这个仓库的前端在 `ui/` 目录下，是一个很小的 React demo UI，用来调用后端的 `/health`、`/ingest`、`/query` 接口。
+
+前端技术栈：
+
+- `React`：负责写浏览器里的 UI 组件。
+- `React DOM`：把 React 组件渲染到浏览器页面上。
+- `Vite`：本地开发服务器和前端打包工具。开发时它会启动一个 web server，默认端口是 `5173`。
+- `TypeScript`：给 JavaScript 加类型检查，帮助提前发现参数、返回值、字段名错误。
+
+关键文件：
+
+- `ui/package.json`：前端项目的配置文件，里面定义依赖和可运行命令。
+- `ui/package-lock.json`：锁定依赖的精确版本，让大家安装出来的依赖一致。
+- `ui/src/`：React 和 TypeScript 源码。
+- `ui/index.html`：浏览器打开的 HTML 入口。
+- `ui/vite.config.ts`：Vite 配置，本项目里设置了 dev server 端口 `5173`。
+- `ui/.env.example`：前端环境变量示例，里面有后端 API 地址 `VITE_API_BASE_URL`。
+
+常见命令：
+
+```bash
+cd ui
+npm install
+npm run dev
+```
+
+这些命令的含义：
+
+- `cd ui`：进入前端项目目录。
+- `npm install`：根据 `package.json` / `package-lock.json` 下载依赖，生成 `node_modules/`。
+- `npm run dev`：运行 `package.json` 里的 `dev` 脚本，也就是启动 Vite dev server。
+
+`package.json` 里目前定义了这些 scripts：
+
+```json
+{
+  "dev": "vite",
+  "build": "tsc -b && vite build",
+  "preview": "vite preview"
+}
+```
+
+它们分别表示：
+
+- `npm run dev`：本地开发时使用，启动 Vite server。
+- `npm run build`：生产构建时使用，先做 TypeScript 检查，再生成静态文件到 `dist/`。
+- `npm run preview`：预览 `npm run build` 生成的生产构建结果。
+
+几个容易混淆的概念：
+
+- `Node.js`：让 JavaScript 可以在本机或容器里运行。前端构建工具 Vite 需要 Node.js。
+- `npm`：Node.js 自带的包管理器，用来安装依赖和运行 scripts。
+- `node_modules/`：npm 下载下来的依赖目录，通常很大，不应该复制进 Docker build context。
+- `5173`：Vite dev server 的端口。浏览器访问 `http://127.0.0.1:5173` 可以打开前端。
+- `VITE_API_BASE_URL`：前端调用后端 API 的基础地址。本项目默认是 `http://127.0.0.1:8000`。
+
+Dockerfile 要做的事情，本质上就是把上面的本地步骤放进容器里：
+
+- 选择一个带 Node.js 的基础镜像。
+- 把 `package.json` / `package-lock.json` 复制进去。
+- 在容器里运行 `npm ci` 安装依赖。
+- 把前端源码复制进去。
+- 暴露 `5173` 端口。
+- 用 `npm run dev -- --host 0.0.0.0` 启动 Vite，让宿主机浏览器可以访问容器里的前端。
+
 ## 学生要完成什么
 
 作业文件在：
