@@ -86,6 +86,53 @@ python3 scripts/list_gemini_models.py
 
 Swagger: `http://127.0.0.1:8000/docs`
 
+### Docker 启动后端
+
+构建并启动 FastAPI backend：
+
+```bash
+docker compose up --build backend
+```
+
+访问：
+
+- Swagger: `http://127.0.0.1:8000/docs`
+- Health: `http://127.0.0.1:8000/health`
+
+如需启用 Gemini，可在宿主机环境变量或 `.env` 中配置：
+
+```bash
+RAG_GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+Compose 会挂载本地目录：
+
+- `./data:/app/data`：保留 FAISS index、metadata、prompt 输出
+- `./raw_docs:/app/raw_docs:ro`：作为只读文档输入
+- `backend_hf_cache:/app/.cache/huggingface`：缓存 sentence-transformers 模型，避免每次重下
+
+不使用 Compose 时，也可以直接用 Docker CLI：
+
+```bash
+docker build -t rag-chatbot-backend:local .
+docker run --rm \
+  -p 8000:8000 \
+  -e RAG_GEMINI_API_KEY="$RAG_GEMINI_API_KEY" \
+  -e RAG_PROMPT_TEMPLATE_PATH="data/prompts/query_prompt_v3.txt" \
+  -e RAG_FINAL_PROMPT_PATH="data/prompts/final_prompt.txt" \
+  -v "$PWD/data:/app/data" \
+  -v "$PWD/raw_docs:/app/raw_docs:ro" \
+  -v rag_chatbot_hf_cache:/app/.cache/huggingface \
+  rag-chatbot-backend:local
+```
+
+其中：
+
+- `-p 8000:8000`：把宿主机 8000 端口映射到容器内 8000 端口
+- `-v "$PWD/data:/app/data"`：挂载本地 `data` 目录
+- `-v "$PWD/raw_docs:/app/raw_docs:ro"`：只读挂载本地 `raw_docs` 目录
+- `-v rag_chatbot_hf_cache:/app/.cache/huggingface`：使用 Docker named volume 缓存模型
+
 启动 UI（可选）：
 
 ```bash
@@ -96,6 +143,45 @@ npm run dev
 ```
 
 UI 默认地址：`http://127.0.0.1:5173`
+
+### Docker 启动前端作业版
+
+前端 Docker 作业文件见：`ui/Dockerfile`，详细说明见：`docs/setup/frontend-docker-assignment.md`。
+
+学生需要先填写 `ui/Dockerfile` 里的 3 个 TODO：
+
+- `COPY TODO_STUDENT_PACKAGE_FILES ./`
+- `RUN TODO_STUDENT_INSTALL_COMMAND`
+- `CMD TODO_STUDENT_START_COMMAND`
+
+不使用 Compose 时，在 `ui/` 目录直接构建并运行：
+
+```bash
+cd ui
+docker build -t rag-chatbot-ui:student .
+docker run --rm \
+  -p 5173:5173 \
+  -e VITE_API_BASE_URL="http://127.0.0.1:8000" \
+  rag-chatbot-ui:student
+```
+
+使用 Compose 时，在仓库根目录运行：
+
+```bash
+docker compose up --build frontend
+```
+
+因为 `compose.yaml` 里配置了 `frontend` 依赖 `backend`，所以上面这条命令会同时启动后端。
+
+也可以显式写出两个服务：
+
+```bash
+docker compose up --build backend frontend
+```
+
+访问前端：`http://127.0.0.1:5173`
+
+前端会通过 `VITE_API_BASE_URL` 调用后端，默认是：`http://127.0.0.1:8000`。
 
 ## 团队协作建议
 
