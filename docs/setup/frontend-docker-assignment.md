@@ -56,7 +56,9 @@ npm run dev
 
 几个容易混淆的概念：
 
-- `Node.js`：让 JavaScript 可以在本机或容器里运行。前端构建工具 Vite 需要 Node.js。
+- `JavaScript`：浏览器能运行的编程语言，前端代码最终会变成 JavaScript 在浏览器里执行。
+- `TypeScript`：JavaScript 的类型增强版本，开发时更安全，构建时会转换成 JavaScript。
+- `Node.js`：不是一门语言，而是 JavaScript runtime。它类似 JavaScript 世界里的 `python3`，让 JavaScript 可以在本机或容器里运行。前端构建工具 Vite 需要 Node.js。
 - `npm`：Node.js 自带的包管理器，用来安装依赖和运行 scripts。
 - `node_modules/`：npm 下载下来的依赖目录，通常很大，不应该复制进 Docker build context。
 - `5173`：Vite dev server 的端口。浏览器访问 `http://127.0.0.1:5173` 可以打开前端。
@@ -74,6 +76,7 @@ Dockerfile 要做的事情，本质上就是把上面的本地步骤放进容器
 如果你熟悉 Python + FastAPI，可以这样类比：
 
 - `Node.js` 类似 `Python` 解释器：它负责运行 JavaScript 工具链。
+- `JavaScript` 类似 `.py` 代码使用的语言本身；`Node.js` 类似运行代码的 `python3` 命令。
 - `npm` 类似 `pip`：它负责安装依赖，也负责运行项目里定义好的命令。
 - `package.json` 类似 `requirements.txt` 加上一部分项目脚本配置：它记录依赖和 `dev` / `build` 等命令。
 - `package-lock.json` 类似一个更严格的 lockfile：它锁定依赖的精确版本，保证不同同学安装结果一致。
