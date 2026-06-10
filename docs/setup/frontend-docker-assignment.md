@@ -71,6 +71,28 @@ Dockerfile 要做的事情，本质上就是把上面的本地步骤放进容器
 - 暴露 `5173` 端口。
 - 用 `npm run dev -- --host 0.0.0.0` 启动 Vite，让宿主机浏览器可以访问容器里的前端。
 
+如果你熟悉 Python + FastAPI，可以这样类比：
+
+- `Node.js` 类似 `Python` 解释器：它负责运行 JavaScript 工具链。
+- `npm` 类似 `pip`：它负责安装依赖，也负责运行项目里定义好的命令。
+- `package.json` 类似 `requirements.txt` 加上一部分项目脚本配置：它记录依赖和 `dev` / `build` 等命令。
+- `package-lock.json` 类似一个更严格的 lockfile：它锁定依赖的精确版本，保证不同同学安装结果一致。
+- `node_modules/` 类似 Python 的 `.venv` 或 site-packages：里面是下载下来的依赖，不应该提交进 git，也不应该手动复制进镜像。
+- `React` 类似前端 UI 层的 framework：它负责组织页面组件，不负责启动服务器。
+- `Vite` 类似前端里的 `uvicorn --reload` 加 build tool：开发时启动本地 server，改代码后快速刷新；构建时生成可部署的静态文件。
+- `npm run dev` 类似 `python3 -m uvicorn app.main:app --reload`：启动本地开发服务。
+- `http://127.0.0.1:5173` 类似 FastAPI 的 `http://127.0.0.1:8000`：都是本地开发服务地址，只是端口不同。
+- `VITE_API_BASE_URL` 类似后端里的环境变量配置：它告诉前端应该去哪里调用 FastAPI API。
+
+本项目里的对应关系：
+
+```text
+Backend: Python + FastAPI + Uvicorn -> http://127.0.0.1:8000
+Frontend: Node.js + React + Vite   -> http://127.0.0.1:5173
+```
+
+浏览器先打开前端 `5173`，前端页面里的 JavaScript 再通过 `VITE_API_BASE_URL` 调用后端 `8000`。
+
 ## 学生要完成什么
 
 作业文件在：
