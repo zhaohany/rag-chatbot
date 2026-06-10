@@ -8,6 +8,22 @@
 
 这个仓库的前端在 `ui/` 目录下，是一个很小的 React demo UI，用来调用后端的 `/health`、`/ingest`、`/query` 接口。
 
+如果你熟悉 Python + FastAPI，可以先用这张表建立直觉：
+
+| Frontend | Python / FastAPI 对标 |
+|---|---|
+| `JavaScript` / `TypeScript` | Python 代码本身，比如 `.py` 文件里的代码 |
+| `Node.js` | `python3` 运行环境，用来运行 JavaScript 工具链 |
+| `npm` | `pip` 加一部分 `Makefile` / task runner 功能 |
+| `package.json` | `requirements.txt` 加项目命令配置 |
+| `package-lock.json` | 锁定依赖精确版本的 lockfile |
+| `node_modules/` | `.venv` 或 site-packages，保存安装好的依赖 |
+| `React` | 类似前端 UI 层的 framework，负责组织页面组件 |
+| `Vite dev server` | `uvicorn --reload`，开发时启动服务并支持快速刷新 |
+| `npm run dev` | `python3 -m uvicorn app.main:app --reload` |
+| `http://127.0.0.1:5173` | FastAPI 的 `http://127.0.0.1:8000`，都是本地开发服务地址 |
+| `VITE_API_BASE_URL` | 后端里的环境变量配置，告诉前端 API 在哪里 |
+
 前端技术栈：
 
 - `React`：负责写浏览器里的 UI 组件。可以类比成前端 UI 层的 framework，类似 FastAPI 帮你组织 API endpoint，React 帮你组织页面组件。
@@ -74,15 +90,6 @@ Dockerfile 要做的事情，本质上就是把上面的本地步骤放进容器
 - 把前端源码复制进去。
 - 暴露 `5173` 端口。
 - 用 `npm run dev -- --host 0.0.0.0` 启动 Vite，让宿主机浏览器可以访问容器里的前端。
-
-还有几个作业中会用到的 Python + FastAPI 对应关系：
-
-- `package.json` 类似 `requirements.txt` 加上一部分项目脚本配置：它记录依赖和 `dev` / `build` 等命令。
-- `package-lock.json` 类似一个更严格的 lockfile：它锁定依赖的精确版本，保证不同同学安装结果一致。
-- `node_modules/` 类似 Python 的 `.venv` 或 site-packages：里面是下载下来的依赖，不应该提交进 git，也不应该手动复制进镜像。
-- `npm run dev` 类似 `python3 -m uvicorn app.main:app --reload`：启动本地开发服务。
-- `http://127.0.0.1:5173` 类似 FastAPI 的 `http://127.0.0.1:8000`：都是本地开发服务地址，只是端口不同。
-- `VITE_API_BASE_URL` 类似后端里的环境变量配置：它告诉前端应该去哪里调用 FastAPI API。
 
 本项目里的对应关系：
 
