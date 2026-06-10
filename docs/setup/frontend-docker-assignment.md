@@ -72,6 +72,64 @@ npm run dev
 - `npm run build`：生产构建时使用，先做 TypeScript 检查，再生成静态文件到 `dist/`。
 - `npm run preview`：预览 `npm run build` 生成的生产构建结果。
 
+`ui/package.json` 完整内容可以这样理解：
+
+```json
+{
+  "name": "rag-chatbot-ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.4.1",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5"
+  }
+}
+```
+
+字段解释：
+
+- `name`：项目名字。这里是 `rag-chatbot-ui`，主要给 npm 和开发工具识别用。
+- `version`：项目版本号。这里是 `0.1.0`，表示当前还是早期版本。
+- `private`：设为 `true` 表示这个包不打算发布到 npm registry，避免误发布。
+- `type`：设为 `module` 表示这个项目默认使用 ES Module 语法，也就是 `import` / `export`。
+- `scripts`：定义可以通过 `npm run <name>` 执行的命令。
+- `dependencies`：运行这个前端应用本身需要的依赖。
+- `devDependencies`：开发、构建、类型检查需要的依赖，最终浏览器运行时不直接依赖它们。
+
+`scripts` 逐项解释：
+
+- `dev`: `vite`。执行 `npm run dev` 时会启动 Vite 开发服务器，用于本地开发。
+- `build`: `tsc -b && vite build`。执行 `npm run build` 时会先运行 TypeScript 编译检查，再运行 Vite 生产构建。
+- `preview`: `vite preview`。执行 `npm run preview` 时会启动一个本地服务器，用来预览 `dist/` 里的生产构建结果。
+
+`dependencies` 逐项解释：
+
+- `react`：React 核心库，用来定义组件、状态和 UI 逻辑。
+- `react-dom`：React 浏览器渲染库，用来把 React 组件挂载到真实 DOM 上。
+
+`devDependencies` 逐项解释：
+
+- `@types/react`：React 的 TypeScript 类型定义，让 TypeScript 知道 React API 的类型。
+- `@types/react-dom`：React DOM 的 TypeScript 类型定义。
+- `@vitejs/plugin-react`：Vite 的 React 插件，让 Vite 正确处理 React / JSX。
+- `typescript`：TypeScript 编译器，负责类型检查和把 TypeScript 转成 JavaScript。
+- `vite`：前端开发服务器和构建工具。
+
+版本号前面的 `^` 表示允许安装兼容的小版本更新。例如 `^18.3.1` 通常允许安装 `18.x.x` 里的更新，但不会自动升级到 `19.x.x`。
+
 几个容易混淆的概念：
 
 - `JavaScript`：浏览器能运行的编程语言，前端代码最终会变成 JavaScript 在浏览器里执行。
