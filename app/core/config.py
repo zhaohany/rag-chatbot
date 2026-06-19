@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     raw_docs_dir: Path = Path("raw_docs")
     index_path: Path = Path("data/index/faiss.index")
     metadata_path: Path = Path("data/meta/metadata.json")
+    metadata_db_path: Path = Path("data/meta/rag_metadata.db")
     embedding_model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
     embedding_batch_size: int = 16
     chunk_size: int = 500

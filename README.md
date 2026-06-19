@@ -103,5 +103,6 @@ UI 默认地址：`http://127.0.0.1:5173`
 - 初始设计文档放 `docs/architecture/design.md`
 - 架构图放 `docs/architecture/5-class-system-design-local-graph.png`
 - 里程碑统一放 `docs/roadmap.md`
+- SQL metadata 作业见 `docs/homework/sql-rag-metadata-assignment.md`
 
 如果后续上云，再从当前 local 结构演进即可，不影响现在开发节奏。
