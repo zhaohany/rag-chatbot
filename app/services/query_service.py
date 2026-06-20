@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
@@ -9,6 +8,7 @@ import numpy as np
 
 from app.core.config import settings
 from app.services.generation_service import generation_service
+from app.services.database_service import DatabaseService, create_database_service
 from app.shared.embedding import get_embedding_model, preload_embedding_model
 
 
@@ -16,21 +16,6 @@ def load_index(index_path: Path) -> faiss.Index:
     if not index_path.exists():
         raise RuntimeError("Index not found. Please run /ingest first.")
     return faiss.read_index(str(index_path))
-
-
-def load_metadata(metadata_path: Path) -> list[dict[str, Any]]:
-    if not metadata_path.exists():
-        return []
-
-    try:
-        with metadata_path.open("r", encoding="utf-8") as f:
-            data = json.load(f)
-    except (OSError, json.JSONDecodeError) as exc:
-        raise RuntimeError(f"Failed to read metadata: {exc}") from exc
-
-    if isinstance(data, list):
-        return [item for item in data if isinstance(item, dict)]
-    return []
 
 
 def embed_question(question: str) -> np.ndarray:
@@ -81,13 +66,14 @@ def build_retrieved_chunks(
 ) -> list[dict[str, Any]]:
     """Build retrieval rows from FAISS output.
 
-    We align by position:
-      indices[0][i] is the vector id from FAISS,
-      metadata[vector_id] is the metadata for that vector.
-
-    Students can fill real `text` and `source_path` later.
+    FAISS returns vector ids. SQLite stores the chunk metadata for each vector id.
     """
     chunks: list[dict[str, Any]] = []
+    metadata_by_vector_id = {
+        int(record["vector_id"]): record
+        for record in metadata
+        if isinstance(record.get("vector_id"), int)
+    }
 
     if distances.size == 0 or indices.size == 0:
         return chunks
@@ -97,11 +83,11 @@ def build_retrieved_chunks(
 
     for rank, raw_vector_id in enumerate(vector_ids_row):
         vector_id = int(raw_vector_id)
-        if vector_id < 0 or vector_id >= len(metadata):
+        if vector_id < 0 or vector_id not in metadata_by_vector_id:
             continue
 
         score = float(scores_row[rank])
-        record: dict[str, Any] = metadata[vector_id]
+        record: dict[str, Any] = metadata_by_vector_id[vector_id]
 
         chunks.append(
             {
@@ -110,7 +96,7 @@ def build_retrieved_chunks(
                 "doc_id": record.get("doc_id"),
                 "score": score,
                 "text": record.get("chunk_text"),
-                "source_path": record.get("source"),
+                "source_path": record.get("source_path"),
             }
         )
 
@@ -118,6 +104,9 @@ def build_retrieved_chunks(
 
 
 class QueryService:
+    def __init__(self, database: DatabaseService | None = None) -> None:
+        self.database = database or create_database_service(settings.metadata_db_path)
+
     def preload_embedding_model(self) -> None:
         preload_embedding_model()
 
@@ -125,7 +114,7 @@ class QueryService:
         index = load_index(settings.index_path)
         query_vector = embed_question(question)
         distances, indices = retrieve_topk(index, query_vector, settings.top_k)
-        metadata = load_metadata(settings.metadata_path)
+        metadata = self.database.load_chunk_metadata()
         retrieved_chunks = build_retrieved_chunks(distances, indices, metadata)
         final_prompt = generation_service.build_prompt(question, retrieved_chunks)
         generation_service.save_prompt(final_prompt)

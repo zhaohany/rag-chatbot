@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -10,6 +9,7 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 from app.core.config import settings
+from app.services.database_service import DatabaseService, create_database_service
 from app.shared.chunking import split_into_chunks
 from app.shared.embedding import get_embedding_model, preload_embedding_model
 from app.shared.ids import make_chunk_id, make_doc_id
@@ -107,39 +107,18 @@ def write_faiss_index(index: faiss.Index, index_path: Path) -> None:
     faiss.write_index(index, str(index_path))
 
 
-def write_metadata(records: list[dict[str, Any]], metadata_path: Path) -> None:
-    """Persist chunk metadata records to JSON.
-
-    Input:
-      records: list of chunk metadata dicts
-      metadata_path: e.g. Path("data/meta/metadata.json")
-
-    Example record:
-      {
-        "doc_id": "doc_1",
-        "chunk_id": "doc_1_chunk_1",
-        "source": "employee_handbook.md",
-        "chunk_index": 1,
-        "chunk_text": "..."
-      }
-    """
-    metadata_path.parent.mkdir(parents=True, exist_ok=True)
-    with metadata_path.open("w", encoding="utf-8") as f:
-        json.dump(records, f, ensure_ascii=False, indent=2)
-
-
 class IngestService:
     def __init__(
         self,
         meta_path: Path | None = None,
         raw_docs_dir: Path | None = None,
         index_path: Path | None = None,
-        metadata_path: Path | None = None,
+        database: DatabaseService | None = None,
     ) -> None:
         self.meta_path = meta_path or settings.system_meta_path
         self.raw_docs_dir = raw_docs_dir or settings.raw_docs_dir
         self.index_path = index_path or settings.index_path
-        self.metadata_path = metadata_path or settings.metadata_path
+        self.database = database or create_database_service(settings.metadata_db_path)
 
     def preload_embedding_model(self) -> None:
         preload_embedding_model()
@@ -153,44 +132,19 @@ class IngestService:
         last_success_ingestion_time: str | None,
         total_docs: int,
     ) -> None:
-        payload = {
-            "ingestion_status": ingestion_status,
-            "last_success_ingestion_time": last_success_ingestion_time,
-            "total_docs": total_docs,
-        }
-        self.meta_path.parent.mkdir(parents=True, exist_ok=True)
-        with self.meta_path.open("w", encoding="utf-8") as f:
-            json.dump(payload, f, ensure_ascii=False, indent=2)
+        self.database.set_ingestion_status(
+            ingestion_status,
+            last_success_ingestion_time,
+            total_docs,
+        )
 
     def get_last_success_ingestion_time(self) -> str | None:
-        if not self.meta_path.exists():
-            return None
-        try:
-            with self.meta_path.open("r", encoding="utf-8") as f:
-                data = json.load(f)
-        except (OSError, json.JSONDecodeError):
-            return None
-        if not isinstance(data, dict):
-            return None
-        timestamp = data.get("last_success_ingestion_time")
-        if timestamp is None or isinstance(timestamp, str):
-            return timestamp
-        return None
+        value = self.database.get_ingestion_meta()["last_success_ingestion_time"]
+        return value if isinstance(value, str) else None
 
     def get_total_docs(self) -> int:
-        if not self.meta_path.exists():
-            return 0
-        try:
-            with self.meta_path.open("r", encoding="utf-8") as f:
-                data = json.load(f)
-        except (OSError, json.JSONDecodeError):
-            return 0
-        if not isinstance(data, dict):
-            return 0
-        total_docs = data.get("total_docs")
-        if isinstance(total_docs, int) and total_docs >= 0:
-            return total_docs
-        return 0
+        value = self.database.get_ingestion_meta()["total_docs"]
+        return value if isinstance(value, int) else 0
 
     def run_sync_ingest(self) -> dict[str, Any]:
         """Run sync ingest orchestration and return summary payload.
@@ -227,6 +181,7 @@ class IngestService:
                     chunk_texts.append(chunk_text)
                     records.append(
                         {
+                            "vector_id": len(records),
                             "doc_id": doc_id,
                             "chunk_id": chunk_id,
                             "source": file_path.name,
@@ -247,7 +202,7 @@ class IngestService:
             elif self.index_path.exists():
                 self.index_path.unlink()
 
-            write_metadata(records, self.metadata_path)
+            self.database.replace_ingested_metadata(records)
 
             finished_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
             total_docs = len(markdown_files)
