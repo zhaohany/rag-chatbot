@@ -16,11 +16,11 @@ WORKDIR /app
 
 # Step 3: 先复制 package.json 和 package-lock.json。
 # 提示：这样 Docker 可以缓存 npm install 这一层；源码变化时不用每次重新安装依赖。
-COPY TODO_STUDENT_PACKAGE_FILES ./
+COPY package*.json ./
 
 # Step 4: 安装前端依赖。
 # 提示：和本地开发一样，使用 npm install 安装依赖。
-RUN TODO_STUDENT_INSTALL_COMMAND
+RUN npm ci
 
 # Step 5: 复制剩余前端源码。
 # 这一步已经给出答案：把 index.html、vite.config.ts、src/ 等复制进镜像。
@@ -33,4 +33,4 @@ EXPOSE 5173
 # Step 7: 启动前端开发服务器。
 # 提示：Docker 容器内必须监听 0.0.0.0，否则宿主机访问不到。
 # 可参考命令：npm run dev -- --host 0.0.0.0
-CMD TODO_STUDENT_START_COMMAND
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
