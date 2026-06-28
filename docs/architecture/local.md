@@ -11,6 +11,7 @@
 - FastAPI API (`app/main.py`)
 - API routes (`/health`, `/ingest`, `/query`)
 - Service skeletons (`health_service`, `ingest_service`, `query_service`)
+- Lightweight ingest queue service (`ingest_queue_service`)
 - System meta (`data/system/system_meta.json`)
 - Lightweight UI (`ui/`, React + Vite + TypeScript)
 
@@ -25,8 +26,12 @@
 ## Data Flow
 
 1. `POST /ingest`
-   - 当前实现为同步 ingest：文档读取 -> chunking -> embedding -> 向量/元数据写入
-   - 每次调用默认执行本地全量重建，便于教学和调试
+   - 当前实现为教学版 queue-based ingest。
+   - API route 调用 `IngestQueueService.submit_ingest_job(...)`。
+   - `IngestQueueService` 创建一条 `ingest_jobs` 记录，状态为 `queued`。
+   - FastAPI `BackgroundTasks` 在 response 返回后调用 `process_ingest_job(...)`。
+   - 后台任务复用 `ingest_service.run_sync_ingest()` 完成文档读取 -> chunking -> embedding -> FAISS / SQLite 写入。
+   - 每个 job 默认执行本地全量重建，便于教学和调试。
 
 2. `POST /query`
    - 当前实现 retrieval-only：问题向量化 -> FAISS top-k 检索 -> 返回 `retrieved_chunks`
@@ -38,6 +43,8 @@
 - 当前实现保持 local MVP，优先保证流程可观察和可调试
 - 系统状态先只维护两个字段：`ingestion_status`、`last_success_ingestion_time`
 - lightweight UI 作为本地演示层，直接调用现有 API（`/health`、`/ingest`、`/query`）
+- `BackgroundTasks` 是 request-triggered background work，不是 scheduled cron，也不是生产级分布式队列。
+- 当前版本一次 `/ingest` 请求只创建一个 job，这个 job 处理所有 `raw_docs/*.md`，不做 per-document message。
 
 ## Design Decisions
 

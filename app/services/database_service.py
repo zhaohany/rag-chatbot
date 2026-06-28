@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import sqlite3
+from datetime import datetime, timezone
 from pathlib import Path
+import sqlite3
 from typing import Any
 
 
@@ -38,7 +39,23 @@ ON chunks (doc_id);
 
 CREATE INDEX IF NOT EXISTS idx_chunks_vector_id
 ON chunks (vector_id);
+
+CREATE TABLE IF NOT EXISTS ingest_jobs (
+    job_id TEXT PRIMARY KEY,
+    status TEXT NOT NULL,
+    message TEXT,
+    created_at TEXT NOT NULL,
+    started_at TEXT,
+    finished_at TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_ingest_jobs_status
+ON ingest_jobs (status);
 """
+
+
+def utc_now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
 class DatabaseService:
@@ -115,6 +132,70 @@ class DatabaseService:
             ),
             "total_docs": max(total_docs, 0),
         }
+
+    def create_ingest_job(self, job_id: str, message: str) -> None:
+        """Create one queued ingestion job record."""
+        self.initialize()
+        with self.connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO ingest_jobs (
+                    job_id,
+                    status,
+                    message,
+                    created_at,
+                    started_at,
+                    finished_at
+                )
+                VALUES (?, 'queued', ?, ?, NULL, NULL)
+                """,
+                (job_id, message, utc_now_iso()),
+            )
+
+    def mark_ingest_job_running(self, job_id: str) -> None:
+        """Mark an ingestion job as running."""
+        self.initialize()
+        with self.connect() as conn:
+            conn.execute(
+                """
+                UPDATE ingest_jobs
+                SET status = 'running',
+                    message = 'Ingestion job is running',
+                    started_at = ?
+                WHERE job_id = ?
+                """,
+                (utc_now_iso(), job_id),
+            )
+
+    def mark_ingest_job_succeeded(self, job_id: str, message: str) -> None:
+        """Mark an ingestion job as succeeded."""
+        self.initialize()
+        with self.connect() as conn:
+            conn.execute(
+                """
+                UPDATE ingest_jobs
+                SET status = 'succeeded',
+                    message = ?,
+                    finished_at = ?
+                WHERE job_id = ?
+                """,
+                (message, utc_now_iso(), job_id),
+            )
+
+    def mark_ingest_job_failed(self, job_id: str, message: str) -> None:
+        """Mark an ingestion job as failed."""
+        self.initialize()
+        with self.connect() as conn:
+            conn.execute(
+                """
+                UPDATE ingest_jobs
+                SET status = 'failed',
+                    message = ?,
+                    finished_at = ?
+                WHERE job_id = ?
+                """,
+                (message, utc_now_iso(), job_id),
+            )
 
     def replace_ingested_metadata(self, records: list[dict[str, Any]]) -> None:
         """Replace document/chunk metadata after a successful local ingest."""

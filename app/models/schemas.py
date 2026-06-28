@@ -8,6 +8,7 @@ class IngestResponse(BaseModel):
     total_docs: int
     total_chunks: int
     message: str | None = None
+    job_id: str | None = None
 
 
 class QueryRequest(BaseModel):

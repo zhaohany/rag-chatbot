@@ -27,7 +27,9 @@ Prompt artifact behavior:
 
 ## POST /ingest
 
-用途：同步触发本地 ingest（读取 `raw_docs/*.md`，并写入本地索引与元数据）
+用途：提交一个本地 ingest job。API 会立刻返回 `queued`，实际 embedding / FAISS / SQLite 写入由 FastAPI `BackgroundTasks` 在 response 返回后继续执行。
+
+说明：这是教学版 queue-based ingestion。它不是定时任务，也不是 Redis/Celery 分布式队列。一次 `/ingest` 请求对应一个 job，这个 job 会处理所有 `raw_docs/*.md` 并全量重建本地索引。
 
 Request body: none
 
@@ -35,11 +37,21 @@ Response example:
 
 ```json
 {
-  "status": "success",
-  "total_docs": 3,
-  "total_chunks": 18,
-  "message": "Ingestion completed"
+  "status": "queued",
+  "total_docs": 0,
+  "total_chunks": 0,
+  "message": "Ingestion job submitted",
+  "job_id": "ingest_20260628_123456_000000"
 }
+```
+
+If another ingest job is already `queued` or `running`, the API returns `409 Conflict`.
+
+Use `GET /health` to observe app-level ingestion status:
+
+```text
+queued -> running -> idle
+queued -> running -> failed
 ```
 
 ## POST /query
