@@ -192,12 +192,18 @@ class DatabaseService:
             rows = conn.execute(
                 """
                 SELECT
-                    -- TODO(homework): 在这里补完整 SELECT 字段
-                    chunks.vector_id
+                    chunks.vector_id,
+                    chunks.chunk_id,
+                    chunks.doc_id,
+                    chunks.chunk_text,
+                    chunks.source_path,
+                    documents.title AS document_title,
+                    documents.status AS document_status,
+                    documents.is_deleted
                 FROM chunks
-                -- TODO(homework): 在这里 JOIN documents
-                -- TODO(homework): 在这里过滤 soft-deleted documents
-                -- TODO(homework): 在这里按 vector_id 排序
+                JOIN documents ON chunks.doc_id = documents.doc_id
+                WHERE documents.is_deleted = 0
+                ORDER BY chunks.vector_id ASC
                 """
             ).fetchall()
 
