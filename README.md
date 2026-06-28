@@ -38,7 +38,7 @@
 
 - 当前是 local MVP：`/health` 与 `/ingest` 可用，`/query` 已支持 retrieval + Gemini generation。
 - 每次调用 `POST /query` 会生成 prompt 产物并写入 `data/prompts/final_prompt.txt`，并返回最终 `answer`。
-- `POST /ingest` 为教学版 queue-based 流程：API 立刻返回 `queued`，FastAPI `BackgroundTasks` 在后台复用现有 ingestion pipeline，读取 `raw_docs/*.md`，执行 chunking/embedding，并写入本地 FAISS 与 metadata。
+- `POST /ingest` 为 background job 流程：API 立刻返回 `queued`，FastAPI `BackgroundTasks` 在后台复用现有 ingestion pipeline，读取 `raw_docs/*.md`，执行 chunking/embedding，并写入本地 FAISS 与 metadata。
 - 目录结构保持分层（`api/`、`services/`、`models/`、`shared/`、`core/`），便于后续演进 async 版本。
 - 目标仍是课堂分阶段实现，优先保证链路清晰与可调试。
 
@@ -190,6 +190,6 @@ docker compose up --build backend frontend
 - 架构图放 `docs/architecture/5-class-system-design-local-graph.png`
 - 里程碑统一放 `docs/roadmap.md`
 - SQL metadata 作业见 `docs/homework/sql-rag-metadata-assignment.md`
-- Ingest queue 作业见 `docs/homework/ingest-queue-assignment.md`
+- Ingest background job 说明见 `docs/architecture/ingest-background-job.md`
 
 如果后续上云，再从当前 local 结构演进即可，不影响现在开发节奏。

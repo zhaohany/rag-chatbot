@@ -61,9 +61,9 @@ def utc_now_iso() -> str:
 class DatabaseService:
     """SQLite-backed metadata store for the local RAG app.
 
-    Homework intent:
+    SQL fill-in areas:
     - The app code already calls this class instead of reading/writing JSON metadata.
-    - Students can practice by replacing the marked SQL strings with their own SQL.
+    - Marked SQL strings can be completed without changing the route/service flow.
     """
 
     def __init__(self, db_path: Path) -> None:
@@ -134,21 +134,44 @@ class DatabaseService:
         }
 
     def create_ingest_job(self, job_id: str, message: str) -> None:
-        """Create one queued ingestion job record."""
+        """Create one queued ingestion job record.
+
+        中文说明：
+          在 /ingest API 接收到请求后，先写入一条 job record。
+          这条记录表示任务已经进入 queued 状态，后台任务稍后会继续处理。
+
+        English keywords:
+          SQL INSERT, job record, queued status, timestamp
+
+        Input:
+          job_id: ingestion job id, e.g. "ingest_20260628_123456_000000"
+          message: readable job message, e.g. "Ingestion job submitted"
+
+        Output:
+          None. The job row is written to SQLite table `ingest_jobs`.
+
+        TODO(sql):
+          Fill in the SQL statement below. It should insert one row into
+          `ingest_jobs` with:
+          - job_id from input
+          - status = "queued"
+          - message from input
+          - created_at = current UTC timestamp
+          - started_at = NULL
+          - finished_at = NULL
+        """
         self.initialize()
         with self.connect() as conn:
-            conn.execute(
-                """
+            sql = """
                 INSERT INTO ingest_jobs (
-                    job_id,
-                    status,
-                    message,
-                    created_at,
-                    started_at,
-                    finished_at
+                    -- TODO(sql): fill in the column list.
+                    -- Expected columns:
+                    -- job_id, status, message, created_at, started_at, finished_at
                 )
                 VALUES (?, 'queued', ?, ?, NULL, NULL)
-                """,
+                """
+            conn.execute(
+                sql,
                 (job_id, message, utc_now_iso()),
             )
 

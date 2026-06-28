@@ -26,7 +26,7 @@
 ## Data Flow
 
 1. `POST /ingest`
-   - 当前实现为教学版 queue-based ingest。
+   - 当前实现为 background job ingest。
    - API route 调用 `IngestQueueService.submit_ingest_job(...)`。
    - `IngestQueueService` 创建一条 `ingest_jobs` 记录，状态为 `queued`。
    - FastAPI `BackgroundTasks` 在 response 返回后调用 `process_ingest_job(...)`。

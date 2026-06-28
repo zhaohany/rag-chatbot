@@ -21,9 +21,9 @@ class IngestJob:
 
 
 def build_queued_ingest_response(job_id: str) -> dict[str, Any]:
-    """Homework function: build response after ingestion job is queued.
+    """Build the API response after an ingestion job is queued.
 
-    中文说明:
+    中文说明：
       /ingest API 不再同步执行 embedding。
       它只把任务交给 IngestQueueService，然后立刻返回。
       这个函数负责组装 API response。
@@ -52,8 +52,6 @@ def build_queued_ingest_response(job_id: str) -> dict[str, Any]:
            "message": "Ingestion job submitted",
          }
 
-    Student TODO:
-      Return the dictionary shown in the example.
     """
     return {
         "status": "queued",
@@ -65,9 +63,9 @@ def build_queued_ingest_response(job_id: str) -> dict[str, Any]:
 
 
 class IngestQueueService:
-    """Small teaching queue wrapper for ingestion jobs.
+    """Queue wrapper for ingestion jobs.
 
-    This class uses FastAPI BackgroundTasks as the lightweight local worker.
+    This class uses FastAPI BackgroundTasks as the local background runner.
     One POST /ingest request creates one job that rebuilds the full local index.
     """
 
@@ -109,8 +107,8 @@ class IngestQueueService:
 
         中文说明:
           这个函数由 FastAPI BackgroundTasks 在 API response 返回后执行。
-          它会真正执行 ingestion，包括:
-          read markdown -> chunking -> embeddings -> FAISS index -> SQLite metadata。
+          它不自己实现 embedding，而是调用已有的 IngestService pipeline。
+          状态更新由这个函数负责，真正的数据处理由 run_sync_ingest() 负责。
 
         English keywords:
           background task, ingestion worker, embedding processing, reuse sync service
@@ -121,18 +119,22 @@ class IngestQueueService:
         Output:
           None. Results are persisted to FAISS index and SQLite metadata.
 
-        Student TODO:
-          In the marked line below, call the existing sync ingest pipeline.
-          Hint: self.ingest_service.run_sync_ingest()
-        """
-        self.database.mark_ingest_job_running(job_id)
-
-        try:
-            # TODO(homework): call existing sync ingest pipeline.
+        TODO:
+          Call the existing sync ingest pipeline and build a success message.
+          Hint:
             result = self.ingest_service.run_sync_ingest()
             message = (
                 "Ingestion completed: "
                 f"docs={result['total_docs']}, chunks={result['total_chunks']}"
+            )
+        """
+        self.database.mark_ingest_job_running(job_id)
+
+        try:
+            # TODO: call existing sync ingest pipeline and build success message.
+            # Hint: use self.ingest_service.run_sync_ingest().
+            raise NotImplementedError(
+                "Call self.ingest_service.run_sync_ingest() and build message."
             )
             self.database.mark_ingest_job_succeeded(job_id, message)
         except RuntimeError as exc:
