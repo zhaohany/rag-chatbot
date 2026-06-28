@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 jobs:
-  test-and-build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,6 +23,14 @@ jobs:
 
       - name: Run unit tests
         run: pytest -q
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
 
       - name: Build backend Docker image
         run: docker build -t rag-chatbot-backend:ci .
