@@ -1,0 +1,47 @@
+name: ci
+
+# Run this workflow for pull requests and for direct pushes to main.
+# PR runs are validation checks before code is merged.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  # Job 1: verify the Python code with unit tests.
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # GitHub runners start empty, so first download the repository code.
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Match the Python version used by the project.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Install app and test dependencies from the project requirements file.
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # Fail the workflow if any unit test fails.
+      - name: Run unit tests
+        run: make test
+
+  # Job 2: verify that the backend can be packaged as a Docker image.
+  # It waits for tests to pass before spending time on Docker build.
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      # Each job gets a fresh runner, so checkout is needed again.
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # This is a validation build only. It does not push or deploy the image.
+      - name: Build backend Docker image
+        run: docker build -t rag-chatbot-backend:ci .
