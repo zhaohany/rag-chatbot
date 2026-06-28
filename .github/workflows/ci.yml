@@ -29,7 +29,7 @@ jobs:
 
       # Fail the workflow if any unit test fails.
       - name: Run unit tests
-        run: pytest -q
+        run: make test
 
   # Job 2: verify that the backend can be packaged as a Docker image.
   # It waits for tests to pass before spending time on Docker build.
